@@ -1,0 +1,56 @@
+{
+  "name": "mongoose-express-sanitizer",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "jest",
+    "clean": "rm -Rf ./dist",
+    "build": "npm run clean; babel ./src --out-dir ./dist --copy-files",
+    "coverage": "npm test -- --coverage",
+    "lint": "eslint src"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "testRunner": "jasmine2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/eslint-parser": "^7.16.5",
+    "babel-eslint": "^10.1.0",
+    "babel-jest": "^25.1.0",
+    "cross-env": "^7.0.2",
+    "eslint": "^8.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-jest": "^26.0.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.0",
+    "eslint-plugin-standard": "^4.0.1",
+    "git-commit-msg-linter": "^4.1.2",
+    "jest-cli": "^27.4.7",
+    "nodemon": "^2.0.2",
+    "supertest": "^4.0.2"
+  },
+  "dependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/plugin-proposal-decorators": "^7.16.7",
+    "@babel/plugin-proposal-export-default-from": "^7.9.0",
+    "@babel/plugin-transform-runtime": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/register": "^7.9.0",
+    "@babel/runtime": "^7.9.0",
+    "axios": "^0.25.0",
+    "body-parser": "^1.19.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "form-data": "^4.0.0",
+    "mongoose": "^7.3.1",
+    "rand-token": "^1.0.1",
+    "request": "^2.88.2",
+    "request-promise": "^0.0.1"
+  }
+}
