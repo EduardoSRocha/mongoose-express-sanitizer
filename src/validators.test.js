@@ -1,13 +1,16 @@
 import {
   isNumber,
   isString,
-  getValidationFunction,
   isTimestamp,
-  isDateString,
   isDate,
   isArray,
+  isValidObjectId,
+  isValidBuffer,
+  isValidDecimal128,
+  isValidMap
 } from './validators'
 
+import { Types } from 'mongoose'
 
 describe('String Validator', () => {
   it('should validate a string with success', () => {
@@ -109,27 +112,20 @@ describe('Number Validator', () => {
     }).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'Value 3 is under of the minimum value \'4\' setted.',
+      message: 'Value 3 is less than the minimum value setted.',
     })
   })
 
-  it('must validate a number and fail for sending a value exceeds the maximum setted', () => {
+  it('must validate a number and fail for sending a value is greater thans the maximum setted', () => {
     expect(() => {
       isNumber({ type: 'Number', max: 3 }, 4)
     }).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'Value 4 exceed the maximum value \'3\' setted.',
+      message: 'Value 4 is greater than the maximum value setted.',
     })
   })
   
-})
-
-describe('Array Validator', () => {  
-  it('should validate an Array with success', () => {
-    const response = isArray({ type: 'Array'}, [])
-    expect(response).toBe(undefined)
-  })
 })
 
 describe('Date Validator', () => {
@@ -139,17 +135,37 @@ describe('Date Validator', () => {
     expect(response).toBe(undefined)
   })
 
-  it('should validate an Date with success passing a null value withou required setted', () => {
+  it('should validate an Date with success passing a null value without required setted', () => {
     const response = isDate({ type: 'Date'}, null)
     expect(response).toBe(undefined)
   })
 
-  it('should validate an Date with success passing a undefined value withou required setted', () => {
+  it('should validate an Date with success passing a undefined value without required setted', () => {
     const response = isDate({ type: 'Date'}, undefined)
     expect(response).toBe(undefined)
   })
 
-  it('should validate an Date with fail passing a empty value withou required setted', () => {
+  it('should validate an Date with success passing a null value with required setted', () => {
+    expect(() => {
+      isDate({ type: 'Date', required: true }, null)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('should validate an Date with success passing a undefined value with required setted', () => {
+    expect(() => {
+      isDate({ type: 'Date', required: true }, undefined)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('should try validate an Date with fail passing a empty string value', () => {
     expect(() => {
       isDate({ type: 'Date'}, '')
     }).toThrow({
@@ -159,7 +175,7 @@ describe('Date Validator', () => {
     })
   })
 
-  it('should validate an Date with fail passing a date out of minimum setted', () => {
+  it('should try validate an Date with fail passing a date out of minimum setted', () => {
     expect(() => {
       const min = new Date('01-01-2000')
       const value =  new Date('01-01-1999')
@@ -167,11 +183,11 @@ describe('Date Validator', () => {
     }).toThrow({
       'httpErrorCode': 400,
       'internalErrorCode': 1002,
-      'message': 'Value Fri Jan 01 1999 00:00:00 GMT-0200 (Brasilia Summer Time) is under of the minimum value \'Sat Jan 01 2000 00:00:00 GMT-0200 (Brasilia Summer Time)\' setted.',
+      'message': 'Value Fri Jan 01 1999 00:00:00 GMT-0200 (Brasilia Summer Time) is less than the minimum value setted.',
     })
   })
 
-  it('should validate an Date with fail passing a date out of maximum setted', () => {
+  it('should try validate an Date with fail passing a date out of maximum setted', () => {
     expect(() => {
       const max =  new Date('01-01-1999')
       const value = new Date('01-01-2000')
@@ -179,11 +195,11 @@ describe('Date Validator', () => {
     }).toThrow({
       'httpErrorCode': 400,
       'internalErrorCode': 1002,
-      'message': 'Value Sat Jan 01 2000 00:00:00 GMT-0200 (Brasilia Summer Time) exceed the maximum value \'Fri Jan 01 1999 00:00:00 GMT-0200 (Brasilia Summer Time)\' setted.',
+      'message': 'Value Sat Jan 01 2000 00:00:00 GMT-0200 (Brasilia Summer Time) is greater than the maximum value setted.',
     })
   })
 
-  it('should validate an Date with fail passing a date out of enum setted', () => {
+  it('should try validate an Date with fail passing a date out of enum setted', () => {
     expect(() => {
       const validValue =  new Date('01-01-1999')
       const value = new Date('01-01-2000')
@@ -195,10 +211,248 @@ describe('Date Validator', () => {
     })
   })
 
-  it('should validate an Date with success when the value is one of enum setted', () => {
+  it('should try validate an Date with success when the value is one of enum setted', () => {
     const date1 =  new Date('01-01-1999')
     const date2 =  new Date('01-01-1998')
     const response = isDate({ type: 'Date', enum:[date1, date2]}, date1)
     expect(response).toBe(undefined)
   })
+})
+
+describe('Array Validator', () => {  
+  it('should validate an Array with success', () => {
+    const response = isArray({ type: 'Array'}, [])
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate an Date with success passing a null value without required setted', () => {
+    const response = isArray({ type: 'Array'}, null)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate an Date with success passing a undefined value without required setted', () => {
+    const response = isArray({ type: 'Array'}, null)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate an Date with success passing a null value with required setted', () => {
+    expect(() => {
+      isArray({ type: 'Array', required: true}, null)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('should validate an Date with success passing a undefined value with required setted', () => {
+    expect(() => {
+      isArray({ type: 'Array', required: true}, undefined)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+})
+
+describe('Timestamp Validator', () => {
+  it('should validate a number with success', () => {
+    const response = isTimestamp({ type: 'Timestamp'}, 1234567890)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a number with success passing a null value without required setted', () => {
+    const response = isTimestamp({ type: 'Timestamp'}, null)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a number with success passing a undefined value without required setted', () => {
+    const response = isTimestamp({ type: 'Timestamp'}, undefined)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a number with error passing a null value with required setted', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp', required: true}, null)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('should validate a number with error passing a undefined value with required setted', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp', required: true}, undefined)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('must validate a number and fail for sending a non-number attribute', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp'}, 'not a number')
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid timestamp.',
+    })
+  })
+
+  it('must validate a number and fail for sending a number less than 0', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp'}, -1)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid timestamp.',
+    })
+  })
+
+  it('must validate a number and fail for sending a number greater than 9999999999999', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp'}, 10000000000000)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid timestamp.',
+    })
+  })
+
+  it('must validate a number and fail for sending a number with decimal places', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp'}, 1.1)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid timestamp.',
+    })
+  })
+
+  it('must validate a number and fail for sending invalid not enum value', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp', enum: [1]}, 2)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1002,
+      message: 'Invalid value. The value must be one of the following: 1.',
+    })
+  })
+
+  it('must validate a number and fail for sending a value bellow to the minimum setted', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp', min: 2}, 1)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1002,
+      message: 'Value 1 is less than the minimum value setted.',
+    })
+  })
+
+  it('must validate a number and fail for sending a value above to the maximum setted', () => {
+    expect(() => {
+      isTimestamp({ type: 'Timestamp', max: 1}, 2)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1002,
+      message: 'Value 2 is greater than the maximum value setted.',
+    })
+  })
+
+})
+
+describe('ObjectId Validator', () => {
+  it('should validate an ObjectId with success', () => {
+    const response = isValidObjectId({ type: 'ObjectId'}, '5f7e4d7b0b9a8b2c9c8b4567')
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate an ObjectId with success passing a null value without required setted', () => {
+    const response = isValidObjectId({ type: 'ObjectId'}, null)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate an ObjectId with success passing a undefined value without required setted', () => {
+    const response = isValidObjectId({ type: 'ObjectId'}, undefined)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate an ObjectId with error passing a null value with required setted', () => {
+    expect(() => {
+      isValidObjectId({ type: 'ObjectId', required: true}, null)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })  
+
+  it('should validate an ObjectId with error passing a undefined value with required setted', () => {
+    expect(() => {
+      isValidObjectId({ type: 'ObjectId', required: true}, undefined)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('must validate an ObjectId and fail for sending a non-string attribute', () => {
+    expect(() => {
+      isValidObjectId({ type: 'ObjectId'}, 123)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid ObjectId.',
+    })
+  })
+
+  it('must validate an ObjectId and fail for sending a string with length less than 24', () => {
+    expect(() => {
+      isValidObjectId({ type: 'ObjectId'}, '12345678901234567890123')
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid ObjectId.',
+    })
+  })
+
+  it('must validate an ObjectId and fail for sending a string with length greater than 24', () => {
+    expect(() => {
+      isValidObjectId({ type: 'ObjectId'}, '1234567890123456789012345')
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid ObjectId.',
+    })
+  })
+
+  it('must validate an ObjectId and fail for sending a string with invalid characters', () => {
+    expect(() => {
+      isValidObjectId({ type: 'ObjectId'}, '12345678901234567890123!')
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid ObjectId.',
+    })
+  })  
+
+
+
+})
+
+describe('Buffer Validator', () => {
+
+})
+
+describe('Decimal128 Validator', () => {
+
+})
+
+describe('Map Validator', () => {
+
 })

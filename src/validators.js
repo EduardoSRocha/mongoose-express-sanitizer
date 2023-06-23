@@ -1,4 +1,6 @@
-const validateRequired = (attributeValue) => {
+import mongoose from 'mongoose'
+
+const isRequired = (attributeValue) => {
   if (attributeValue === undefined || attributeValue === null || attributeValue === '') {
     throw { 
       message: 'Attribute is required.',
@@ -9,8 +11,8 @@ const validateRequired = (attributeValue) => {
 }
   
 const isString =(schemaAttribute, value) => {
-  if(schemaAttribute.required) validateRequired(value)
-  if(schemaAttribute.enum) validateEnum(schemaAttribute, value)
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
   if(!schemaAttribute.required && (value === undefined || value === null || value === '')) return
   if (typeof value !== 'string') {
     throw { 
@@ -23,8 +25,8 @@ const isString =(schemaAttribute, value) => {
 }
 
 const isNumber = (schemaAttribute, value)=> {
-  if(schemaAttribute.required) validateRequired(value)
-  if(schemaAttribute.enum) validateEnum(schemaAttribute, value)
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
   if(!schemaAttribute.required && (value === undefined || value === null)) return
   if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
   if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
@@ -37,8 +39,8 @@ const isNumber = (schemaAttribute, value)=> {
 }
 
 const isDate = (schemaAttribute, value) => {
-  if(schemaAttribute.required) validateRequired(value)
-  if(schemaAttribute.enum) validateEnum(schemaAttribute, value)
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
   if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
   if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
   if(!schemaAttribute.required && (value === undefined || value === null)) return
@@ -46,46 +48,59 @@ const isDate = (schemaAttribute, value) => {
     throw {
       message: `Expected a valid Date object, but received '${value}'.`,
       httpErrorCode: 400,
-      internalErrorCode: 1002,
+      internalErrorCode: 1003,
     }
   }
 }
   
-const isDateString = (value) => {
-  const desiredType = 'string'
-  if (typeof value !== 'string' || isNaN(Date.parse(value) || value === undefined || value === null)) {
-    throw { 
-      message: `Expected '${desiredType}' in a valid date format, but received '${typeof value}'.`,
+const isTimestamp = (schemaAttribute, value) => {
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
+  if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
+  if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+
+  if(value > 9999999999999) {
+    throw {
+      message: 'Invalid timestamp.',
       httpErrorCode: 400,
       internalErrorCode: 1004
     }
   }
-}
+
+  if (value % 1 !== 0) {
+    throw {
+      message: 'Invalid timestamp.',
+      httpErrorCode: 400,
+      internalErrorCode: 1004
+    }
+  }
   
-const isTimestamp = (attribute) => {
-  const desiredType = 'number'
-  
-  if (typeof attribute !== 'number' || isNaN(attribute)) {
-    throw { 
-      message: `Expected '${desiredType}', but received '${typeof attribute}'.`,
+  if (typeof value !== 'number' || isNaN(value) || value <= 0) {
+    throw {
+      message: 'Invalid timestamp.',
+      httpErrorCode: 400,
+      internalErrorCode: 1004
+    }
+  }
+
+  const timestamp = new Date(value)
+
+  if (isNaN(timestamp.getTime())) {
+    throw {
+      message: 'Invalid timestamp.',
       httpErrorCode: 400,
       internalErrorCode: 1005
     }
   }
 }
 
-const validateEnum = (schemaAttribute, attributeValue) => {
-  if (!schemaAttribute.enum.includes(attributeValue)) {
-    throw { 
-      message: `Invalid value. The value must be one of the following: ${schemaAttribute.enum.join(', ')}.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1006
-    }
-  }
-}
-
-const isArray= (schemaAttribute, value) => {
-  if(schemaAttribute.required) validateRequired(value)
+const isArray = (schemaAttribute, value) => {
+  if(schemaAttribute.required) isRequired(value)
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+  if(schemaAttribute.enum) verifyValidEnumForArray(schemaAttribute.enum, value)
+  if(schemaAttribute.max) verifyMaxLengthArray(schemaAttribute.max, value)
+  if(schemaAttribute.min) verifyMinLengthArray(schemaAttribute.min, value)
   if (!Array.isArray(value)) {
     throw { 
       message: `Expected Array, but received '${typeof value}'.`,
@@ -95,24 +110,116 @@ const isArray= (schemaAttribute, value) => {
   }
 }
 
-const getValidationFunction = (schemaTree, attributeName) => {
-  const attributeSchema = schemaTree[attributeName]
-  
-  if (!attributeSchema || typeof attributeSchema.validate !== 'function') {
+const isValidObjectId = (schemaAttribute, value) => {
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
+  if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
+  if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+  if (!mongoose.Types.ObjectId.isValid(value) || value.length !== 24 || typeof value !== 'string') {
     throw { 
-      message: `Validation function not found for attribute '${attributeName}' in the schema.`,
+      message: 'Invalid ObjectId.',
       httpErrorCode: 400,
-      internalErrorCode: 1007
+      internalErrorCode: 1001
+    } 
+  }
+
+  console.log('*************************************', value, value.length, )
+  return
+}
+
+const isValidBuffer = (schemaAttribute, value) => {
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
+  if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
+  if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+  if (!Buffer.isBuffer(value)) {
+    throw { 
+      message: 'Invalid Buffer.',
+      httpErrorCode: 400,
+      internalErrorCode: 1001
+    } 
+  }
+  return
+}
+
+const isValidDecimal128 = (schemaAttribute, value) => {
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
+  if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
+  if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+
+  if (!(value instanceof mongoose.Types.Decimal128)) {
+    throw {
+      message: 'Invalid Decimal128.',
+      httpErrorCode: 400,
+      internalErrorCode: 1001
     }
   }
-  
-  return attributeSchema.validate
+}
+
+const isValidMap = (schemaAttribute, value) => {
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
+  if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
+  if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+
+  if (!(value instanceof mongoose.Types.Map)) {
+    throw {
+      message: 'Invalid Map.',
+      httpErrorCode: 400,
+      internalErrorCode: 1001
+    }
+  }
+}
+
+const verifyEnumValue = (schemaAttribute, value) => {
+  if (!schemaAttribute.enum.includes(value)) {
+    throw { 
+      message: `Invalid value. The value must be one of the following: ${schemaAttribute.enum.join(', ')}.`,
+      httpErrorCode: 400,
+      internalErrorCode: 1006
+    }
+  }
+}
+
+const verifyMinLengthArray = (minLength, attribute) => {
+  if (!Array.isArray(attribute) || attribute.length < minLength) {
+    throw { 
+      message: `The array length must be at least ${minLength}.`,
+      httpErrorCode: 400,
+      internalErrorCode: 1008
+    }
+  }
+}
+
+const verifyMaxLengthArray = (maxLength, attribute) => {
+  if (!Array.isArray(attribute) || attribute.length > maxLength) {
+    throw {
+      message: `The array length must not exceed ${maxLength}.`,
+      httpErrorCode: 400,
+      internalErrorCode: 1009,
+    }
+  }
+}
+
+const verifyValidEnumForArray = (enumValues, attribute) => {
+  if (!Array.isArray(attribute) || !attribute.every((value) => enumValues.includes(value))) {
+    throw {
+      message: `Invalid value in the array. The values must be one of ${enumValues.join(', ')}.`,
+      httpErrorCode: 400,
+      internalErrorCode: 1010,
+    }
+  }
 }
 
 const verifyMinValue = (min, attribute) => {
   if (attribute < min) {
     throw { 
-      message: `Value ${attribute} is under of the minimum value '${min}' setted.`,
+      message: `Value ${attribute} is less than the minimum value setted.`,
       httpErrorCode: 400,
       internalErrorCode: 1007
     }
@@ -122,7 +229,7 @@ const verifyMinValue = (min, attribute) => {
 const verifyMaxValue = (max, attribute) => {
   if (attribute > max) {
     throw { 
-      message: `Value ${attribute} exceed the maximum value '${max}' setted.`,
+      message: `Value ${attribute} is greater than the maximum value setted.`,
       httpErrorCode: 400,
       internalErrorCode: 1007
     }
@@ -132,9 +239,11 @@ const verifyMaxValue = (max, attribute) => {
 module.exports = {
   isNumber,
   isString,
-  getValidationFunction,
   isTimestamp,
-  isDateString,
   isDate,
-  isArray
+  isArray,
+  isValidObjectId,
+  isValidBuffer,
+  isValidDecimal128,
+  isValidMap
 }
