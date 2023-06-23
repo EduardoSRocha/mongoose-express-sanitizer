@@ -144,20 +144,32 @@ const isValidBuffer = (schemaAttribute, value) => {
   return
 }
 
+const isConvertableToDecimal128 = (value) => typeof value !== 'string' && typeof value !== 'number'? false : true
+
+const validateNumericString = (value) => typeof value === 'string'? /^[\d.]+$/.test(value) : true
+
 const isValidDecimal128 = (schemaAttribute, value) => {
   if(schemaAttribute.required) isRequired(value)
   if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
   if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
   if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
   if(!schemaAttribute.required && (value === undefined || value === null)) return
-
-  if (!(value instanceof mongoose.Types.Decimal128)) {
+  if(!validateNumericString(value)) {
     throw {
       message: 'Invalid Decimal128.',
       httpErrorCode: 400,
       internalErrorCode: 1001
     }
   }
+  if(!isConvertableToDecimal128(value)) {
+    throw {
+      message: 'Invalid Decimal128.',
+      httpErrorCode: 400,
+      internalErrorCode: 1001
+    }
+  }
+
+  return
 }
 
 const isValidMap = (schemaAttribute, value) => {
@@ -166,12 +178,26 @@ const isValidMap = (schemaAttribute, value) => {
   if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
   if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
   if(!schemaAttribute.required && (value === undefined || value === null)) return
-
-  if (!(value instanceof mongoose.Types.Map)) {
+  const { of, validate } = schemaAttribute
+  if(typeof value !== 'object' ) {
     throw {
       message: 'Invalid Map.',
       httpErrorCode: 400,
       internalErrorCode: 1001
+    }
+  }
+
+  if (typeof value !== 'object' || value === null) {
+    if (of && validate) {
+      for (const [, value] of value.entries()) {
+        if (!of.validate(value)) {
+          throw {
+            message: 'Invalid key to Map.',
+            httpErrorCode: 400,
+            internalErrorCode: 1001
+          }
+        }
+      }
     }
   }
 }

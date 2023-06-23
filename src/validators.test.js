@@ -10,7 +10,7 @@ import {
   isValidMap
 } from './validators'
 
-import { Types } from 'mongoose'
+import mongoose from 'mongoose'
 
 describe('String Validator', () => {
   it('should validate a string with success', () => {
@@ -446,13 +446,196 @@ describe('ObjectId Validator', () => {
 })
 
 describe('Buffer Validator', () => {
+  it('should validate a Buffer with success', () => {
+    const response = isValidBuffer({ type: 'Buffer'}, Buffer.from('test'))
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a Buffer with success passing a null value without required setted', () => {
+    const response = isValidBuffer({ type: 'Buffer'}, null)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a Buffer with success passing a undefined value without required setted', () => {
+    const response = isValidBuffer({ type: 'Buffer'}, undefined)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a Buffer with error passing a null value with required setted', () => {
+    expect(() => {
+      isValidBuffer({ type: 'Buffer', required: true}, null)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('should validate a Buffer with error passing a undefined value with required setted', () => {
+    expect(() => {
+      isValidBuffer({ type: 'Buffer', required: true}, undefined)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('must validate a Buffer and fail for sending a non-string attribute', () => {
+    expect(() => {
+      isValidBuffer({ type: 'Buffer'}, 123)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid Buffer.',
+    })
+  })
+
+  it('must validate a Buffer and fail for sending a string with length less than 24', () => {
+    expect(() => {
+      isValidBuffer({ type: 'Buffer'}, '12345678901234567890123')
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid Buffer.',
+    })
+  })
+
+  it('must validate a Buffer and fail for sending a string with length greater than 24', () => {
+    expect(() => {
+      isValidBuffer({ type: 'Buffer'}, '1234567890123456789012345')
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid Buffer.',
+    })
+  })
+
+  it('must validate a Buffer and fail for sending a string with invalid characters', () => {
+    expect(() => {
+      isValidBuffer({ type: 'Buffer'}, '12345678901234567890123!')
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid Buffer.',
+    })
+  })
 
 })
 
 describe('Decimal128 Validator', () => {
+  it('should validate a Decimal128 with success', () => {
+    const response = isValidDecimal128({ type: 'Decimal128'}, '123.456')
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a Decimal128 with success passing a null value without required setted', () => {
+    const response = isValidDecimal128({ type: 'Decimal128'}, null)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a Decimal128 with success passing a undefined value without required setted', () => {
+    const response = isValidDecimal128({ type: 'Decimal128'}, undefined)
+    expect(response).toBe(undefined)
+  })
+  
+  it('should validate a Decimal128 with error passing a null value with required setted', () => {
+    expect(() => {
+      isValidDecimal128({ type: 'Decimal128', required: true}, null)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('should validate a Decimal128 with error passing a undefined value with required setted', () => {
+    expect(() => {
+      isValidDecimal128({ type: 'Decimal128', required: true}, undefined)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('must validate a Decimal128 and fail for sending a non-string and non-numeric attribute', () => {
+    expect(() => {
+      isValidDecimal128({ type: 'Decimal128'}, [])
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid Decimal128.',
+    })
+  })
+
+  it('must validate a Decimal128 and fail for sending a string with invalid characters', () => {
+    expect(() => {
+      isValidDecimal128({ type: 'Decimal128'}, '12345678901234567890123!')
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid Decimal128.',
+    })
+  })
 
 })
 
 describe('Map Validator', () => {
 
+  // Test case
+  it('should validate a Map with success', () => {
+    // Define the schema
+    const userSchema = new mongoose.Schema({
+      preferences: {
+        type: Map,
+        of: String,
+      },
+    })
+    const { preferences } = userSchema.tree
+
+    expect(() => {
+      isValidMap(preferences, { 'color': 'blue', 'language': 'english'})
+    }).not.toThrow()
+  })
+
+  it('should validate a Map with success passing a null value without required setted', () => {
+    const response = isValidMap({ type: 'Map'}, null)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a Map with success passing a undefined value without required setted', () => {
+    const response = isValidMap({ type: 'Map'}, undefined)
+    expect(response).toBe(undefined)
+  })
+
+  it('should validate a Map with error passing a null value with required setted', () => {
+    expect(() => {
+      isValidMap({ type: 'Map', required: true}, null)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('should validate a Map with error passing a undefined value with required setted', () => {
+    expect(() => {
+      isValidMap({ type: 'Map', required: true}, undefined)
+    }).toThrow({
+      'httpErrorCode': 400,
+      'internalErrorCode': 1002,
+      'message': 'Attribute is required.',
+    })
+  })
+
+  it('must validate a Map and fail for sending a non-object attribute', () => {
+    expect(() => {
+      isValidMap({ type: 'Map'}, 1)
+    }).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1005,
+      message: 'Invalid Map.',
+    })
+  })
 })
