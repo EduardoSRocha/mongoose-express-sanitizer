@@ -14,8 +14,19 @@ import mongoose from 'mongoose'
 
 describe('String Validator', () => {
   it('should validate a string with success', () => {
-    const response = isString({ type: 'String'}, 'string')
-    expect(response).toBe(undefined)
+    expect(() => isString({ type: 'String'}, 'string')).not.toThrow()
+  })
+
+  it('should validate a string with success for sending null to not required value', () => {
+    expect(() => isString({ type: 'String'}, null)).not.toThrow()
+  })
+
+  it('should validate a string with success for sending undefined to not required value', () => {
+    expect(() => isString({ type: 'String'}, undefined)).not.toThrow()
+  })
+
+  it('should validate a string with success for sending empty string to not required value', () => {
+    expect(() => isString({ type: 'String'}, '')).not.toThrow()
   })
 
   it('must validate a string and fail for sending null to required value', () => {
@@ -61,10 +72,16 @@ describe('String Validator', () => {
 
 describe('Number Validator', () => {
   it('should validate a number with success', () => {
-    const response = isNumber({ type: 'Number'}, 0)
-    expect(response).toBe(undefined)
+    expect(() => isNumber({ type: 'Number'}, 0)).not.toThrow()
   })
 
+  it('should validate a number with success for sending null to not required value', () => {
+    expect(() => isNumber({ type: 'Number'}, null)).not.toThrow()
+  })
+
+  it('should validate a number with success for sending undefined to not required value', () => {
+    expect(() => isNumber({ type: 'Number'}, undefined)).not.toThrow()
+  })
 
   it('must validate a number and fail for sending null to required value', () => {
     expect(() => {
@@ -130,22 +147,18 @@ describe('Number Validator', () => {
 
 describe('Date Validator', () => {
   it('should validate an Date with success', () => {
-    const today = new Date()
-    const response = isDate({ type: 'Date'}, today)
-    expect(response).toBe(undefined)
+    expect(() => isDate({ type: 'Date'}, new Date())).not.toThrow()
   })
 
   it('should validate an Date with success passing a null value without required setted', () => {
-    const response = isDate({ type: 'Date'}, null)
-    expect(response).toBe(undefined)
+    expect(() => isDate({ type: 'Date'}, null)).not.toThrow()
   })
 
   it('should validate an Date with success passing a undefined value without required setted', () => {
-    const response = isDate({ type: 'Date'}, undefined)
-    expect(response).toBe(undefined)
+    expect(() => isDate({ type: 'Date'}, undefined)).not.toThrow()
   })
 
-  it('should validate an Date with success passing a null value with required setted', () => {
+  it('should validate an Date with error passing a null value with required setted', () => {
     expect(() => {
       isDate({ type: 'Date', required: true }, null)
     }).toThrow({
@@ -155,7 +168,7 @@ describe('Date Validator', () => {
     })
   })
 
-  it('should validate an Date with success passing a undefined value with required setted', () => {
+  it('should validate an Date with error passing a undefined value with required setted', () => {
     expect(() => {
       isDate({ type: 'Date', required: true }, undefined)
     }).toThrow({
@@ -221,18 +234,15 @@ describe('Date Validator', () => {
 
 describe('Array Validator', () => {  
   it('should validate an Array with success', () => {
-    const response = isArray({ type: 'Array'}, [])
-    expect(response).toBe(undefined)
+    expect(() => isArray({ type: 'Array'}, [])).not.toThrow()
   })
 
   it('should validate an Date with success passing a null value without required setted', () => {
-    const response = isArray({ type: 'Array'}, null)
-    expect(response).toBe(undefined)
+    expect(() => isArray({ type: 'Array'}, null)).not.toThrow()
   })
 
   it('should validate an Date with success passing a undefined value without required setted', () => {
-    const response = isArray({ type: 'Array'}, null)
-    expect(response).toBe(undefined)
+    expect(() => isArray({ type: 'Array'}, undefined)).not.toThrow()
   })
 
   it('should validate an Date with success passing a null value with required setted', () => {
@@ -259,18 +269,15 @@ describe('Array Validator', () => {
 
 describe('Timestamp Validator', () => {
   it('should validate a number with success', () => {
-    const response = isTimestamp({ type: 'Timestamp'}, 1234567890)
-    expect(response).toBe(undefined)
+    expect(() => isTimestamp({ type: 'Timestamp'}, 123456789)).not.toThrow()
   })
 
   it('should validate a number with success passing a null value without required setted', () => {
-    const response = isTimestamp({ type: 'Timestamp'}, null)
-    expect(response).toBe(undefined)
+    expect(() => isTimestamp({ type: 'Timestamp'}, null)).not.toThrow()
   })
 
   it('should validate a number with success passing a undefined value without required setted', () => {
-    const response = isTimestamp({ type: 'Timestamp'}, undefined)
-    expect(response).toBe(undefined)
+    expect(() => isTimestamp({ type: 'Timestamp'}, undefined)).not.toThrow()
   })
 
   it('should validate a number with error passing a null value with required setted', () => {
@@ -367,18 +374,15 @@ describe('Timestamp Validator', () => {
 
 describe('ObjectId Validator', () => {
   it('should validate an ObjectId with success', () => {
-    const response = isValidObjectId({ type: 'ObjectId'}, '5f7e4d7b0b9a8b2c9c8b4567')
-    expect(response).toBe(undefined)
+    expect(() => isValidObjectId({ type: 'ObjectId'}, '5f7e4d7b0b9a8b2c9c8b4567')).not.toThrow()
   })
 
   it('should validate an ObjectId with success passing a null value without required setted', () => {
-    const response = isValidObjectId({ type: 'ObjectId'}, null)
-    expect(response).toBe(undefined)
+    expect(() => isValidObjectId({ type: 'ObjectId'}, null)).not.toThrow()
   })
 
   it('should validate an ObjectId with success passing a undefined value without required setted', () => {
-    const response = isValidObjectId({ type: 'ObjectId'}, undefined)
-    expect(response).toBe(undefined)
+    expect(() => isValidObjectId({ type: 'ObjectId'}, undefined)).not.toThrow()
   })
 
   it('should validate an ObjectId with error passing a null value with required setted', () => {
@@ -525,27 +529,24 @@ describe('Buffer Validator', () => {
 
 describe('Decimal128 Validator', () => {
   it('should validate a Decimal128 with success', () => {
-    const response = isValidDecimal128({ type: 'Decimal128'}, '123.456')
-    expect(response).toBe(undefined)
+    expect(() => isValidDecimal128({ type: 'Decimal128'}, '123.456')).not.toThrow()
   })
 
   it('should validate a Decimal128 with success passing a null value without required setted', () => {
-    const response = isValidDecimal128({ type: 'Decimal128'}, null)
-    expect(response).toBe(undefined)
+    expect(() => isValidDecimal128({ type: 'Decimal128'}, null)).not.toThrow()
   })
 
   it('should validate a Decimal128 with success passing a undefined value without required setted', () => {
-    const response = isValidDecimal128({ type: 'Decimal128'}, undefined)
-    expect(response).toBe(undefined)
+    expect(() => isValidDecimal128({ type: 'Decimal128'}, undefined)).not.toThrow()
   })
   
   it('should validate a Decimal128 with error passing a null value with required setted', () => {
     expect(() => {
       isValidDecimal128({ type: 'Decimal128', required: true}, null)
     }).toThrow({
-      'httpErrorCode': 400,
-      'internalErrorCode': 1002,
-      'message': 'Attribute is required.',
+      httpErrorCode: 400,
+      internalErrorCode: 1002,
+      message: 'Attribute is required.',
     })
   })
 
@@ -553,9 +554,9 @@ describe('Decimal128 Validator', () => {
     expect(() => {
       isValidDecimal128({ type: 'Decimal128', required: true}, undefined)
     }).toThrow({
-      'httpErrorCode': 400,
-      'internalErrorCode': 1002,
-      'message': 'Attribute is required.',
+      httpErrorCode: 400,
+      internalErrorCode: 1002,
+      message: 'Attribute is required.',
     })
   })
 
@@ -582,31 +583,26 @@ describe('Decimal128 Validator', () => {
 })
 
 describe('Map Validator', () => {
+  const userSchema = new mongoose.Schema({
+    preferences: {
+      type: Map,
+      of: String,
+    },
+  })
+  const { preferences } = userSchema.tree
 
-  // Test case
   it('should validate a Map with success', () => {
-    // Define the schema
-    const userSchema = new mongoose.Schema({
-      preferences: {
-        type: Map,
-        of: String,
-      },
-    })
-    const { preferences } = userSchema.tree
-
     expect(() => {
       isValidMap(preferences, { 'color': 'blue', 'language': 'english'})
     }).not.toThrow()
   })
 
   it('should validate a Map with success passing a null value without required setted', () => {
-    const response = isValidMap({ type: 'Map'}, null)
-    expect(response).toBe(undefined)
+    expect(() => isValidMap(preferences, null)).not.toThrow()
   })
 
   it('should validate a Map with success passing a undefined value without required setted', () => {
-    const response = isValidMap({ type: 'Map'}, undefined)
-    expect(response).toBe(undefined)
+    expect(() => isValidMap(preferences, undefined)).not.toThrow()
   })
 
   it('should validate a Map with error passing a null value with required setted', () => {

@@ -12,7 +12,7 @@ import {
 } from './validators.js'
 
 const middleware = (schema, attribute) =>
-  (req, res, next) =>
+  (req) =>
     sanitize(schema, attribute, req)
 
 const sanitize = (schemaTree, req, reqAttribute, next) => {
