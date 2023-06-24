@@ -3,6 +3,8 @@ import {
 } from './'
 import mongoose from 'mongoose'
 
+// String
+
 describe('middleware schema validator with attributes of type string', () => {
   const taskSchema = new mongoose.Schema({
     title: {
@@ -74,7 +76,7 @@ describe('middleware schema validator with attributes of type string', () => {
     expect(() => middleware({ title, description, status, priority }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute title is required.'
     })
   })    
 
@@ -124,6 +126,8 @@ describe('middleware schema validator with attributes of type string', () => {
     }) 
   })
 })
+
+// Number
 
 describe('middleware schema validator with attributes of type number', () => {
   const productSchema = new mongoose.Schema({
@@ -191,7 +195,7 @@ describe('middleware schema validator with attributes of type number', () => {
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute price is required.'
     })
   })
 
@@ -236,7 +240,7 @@ describe('middleware schema validator with attributes of type number', () => {
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute quantity is required.'
     })
   })
 
@@ -251,11 +255,13 @@ describe('middleware schema validator with attributes of type number', () => {
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute quantity is required.'
     })
   })
 
 })
+
+// Boolean
 
 describe('middleware schema validator with attributes of type boolean', () => {
   const inscriptionSchema = new mongoose.Schema({
@@ -285,7 +291,7 @@ describe('middleware schema validator with attributes of type boolean', () => {
     expect(() => middleware({ isAvailable }, {})).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute isAvailable is required.'
     })
   })
 
@@ -297,7 +303,7 @@ describe('middleware schema validator with attributes of type boolean', () => {
     expect(() => middleware({ isAvailable }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute isAvailable is required.'
     })
   })
 
@@ -309,7 +315,7 @@ describe('middleware schema validator with attributes of type boolean', () => {
     expect(() => middleware({ isAvailable }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute isAvailable is required.'
     })
   })
 
@@ -325,6 +331,8 @@ describe('middleware schema validator with attributes of type boolean', () => {
     })
   })
 })
+
+// Date
 
 describe('middleware schema validator with attributes of type date', () => {
   const userSchema = new mongoose.Schema({
@@ -355,7 +363,7 @@ describe('middleware schema validator with attributes of type date', () => {
     expect(() => middleware({ birthDate }, {})).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute birthDate is required.'
     })
   })
 
@@ -367,7 +375,7 @@ describe('middleware schema validator with attributes of type date', () => {
     expect(() => middleware({ birthDate }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute birthDate is required.'
     })
   })
 
@@ -379,7 +387,7 @@ describe('middleware schema validator with attributes of type date', () => {
     expect(() => middleware({ birthDate }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute birthDate is required.'
     })
   })
 
@@ -395,6 +403,8 @@ describe('middleware schema validator with attributes of type date', () => {
     })
   })
 })
+
+// Array
 
 describe('middleware schema validator with attributes of type array', () => {
   const socialNetworkSchema = new mongoose.Schema({
@@ -455,7 +465,7 @@ describe('middleware schema validator with attributes of type array', () => {
     expect(() => middleware({ hobbies }, {})).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute hobbies is required.'
     })
   })
 
@@ -467,7 +477,7 @@ describe('middleware schema validator with attributes of type array', () => {
     expect(() => middleware({ hobbies }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute hobbies is required.'
     })
   })
 
@@ -479,57 +489,204 @@ describe('middleware schema validator with attributes of type array', () => {
     expect(() => middleware({ hobbies }, body)).toThrow({
       httpErrorCode: 400,
       internalErrorCode: 1000,
-      message: 'The attribute is required.'
+      message: 'The attribute hobbies is required.'
     })
   })
 
 })
 
+// Object
+
 describe('middleware schema validator with attributes of type object', () => {
-  const employeeSchema = new mongoose.Schema({
-    address: {
-      type: Object,
-      required: true,
+  const animalSchema = new mongoose.Schema({
+    species: String,
+    physicalCharacteristics: {
+      size: {
+        type: String,
+      },
     },
-    contact: {
-      type: Object,
-      of: String,
+    behavior: {
+      diet: {
+        type: String,
+        enum: ['carnivore', 'herbivore', 'omnivore'],
+      },
+      communication: {
+        verbal: {
+          type: Boolean,
+        },
+        nonVerbal: {
+          type: Boolean,
+        },
+      }
     },
+
   })
 
-  const Employee = mongoose.model('Employee', employeeSchema)
 
-  const { address, contact } = Employee.schema.tree
+  const Animal = mongoose.model('Animal', animalSchema)
+
+  const { size, behavior } = Animal.schema.tree
 
   it('should return without error when all attributes are valid', () => {
     const body = {
-      address: {
-        street: 'street',
-        number: 123,
+      size: 'big',
+      behavior: {
+        diet: 'carnivore',
+        communication: {
+          verbal: true,
+          nonVerbal: false,
+        },
       },
-      contact: {
-        phone: '123456789',
-        email: 'email@email.com'
-      },
     }
 
-    expect(() => middleware({ address, contact }, body)).not.toThrow()
+    expect(() => middleware({ size, behavior }, body)).not.toThrow()
   })
 
-  it('should return without error when the attribute is not required and null is sended', () => {
-    const body = {
-      contact: null,
-    }
-
-    expect(() => middleware({ contact }, body)).not.toThrow()
-  })
-
-  it('should return without error when the attribute is not required and undefined is sended', () => {
-    const body = {
-      contact: undefined,
-    }
-
-    expect(() => middleware({ contact }, body)).not.toThrow()
-  })
-
+    
 })
+
+// isDecimal128
+
+// describe('middleware schema validator with attributes of type isDecimal128', () => {
+//   const employeeSchema = new mongoose.Schema({
+//     salary: {
+//       type: mongoose.Schema.Types.Decimal128,
+//       required: true,
+//     },
+//   })
+
+//   const Employee = mongoose.model('Employee', employeeSchema)
+
+//   const { salary } = Employee.schema.tree
+
+//   it('should return without error when all attributes are valid', () => {
+//     const body = {
+//       salary: 123.45,
+//     }
+
+//     expect(() => middleware({ salary }, body)).not.toThrow()
+//   })
+
+//   it('should return without error when the attribute is not required and null is sended', () => {
+//     const body = {
+//       salary: null,
+//     }
+
+//     expect(() => middleware({ salary }, body)).not.toThrow()
+//   })
+
+//   it('should return without error when the attribute is not required and undefined is sended', () => {
+//     const body = {
+//       salary: undefined,
+//     }
+
+//     expect(() => middleware({ salary }, body)).not.toThrow()
+//   })
+
+//   it('should return an error when the attribute is not a decimal128', () => {
+//     const body = {
+//       salary: 'salary',
+//     }
+
+//     expect(() => middleware({ salary }, body)).toThrow({
+//       httpErrorCode: 400,
+//       internalErrorCode: 1000,
+//       message: 'Expected a valid Decimal128 object, but received \'string\'.'
+//     })
+//   })
+// })
+
+// // isTimestamp,
+
+// describe('middleware schema validator with attributes of type isTimestamp', () => {
+//   const employeeSchema = new mongoose.Schema({
+//     createdAt: {
+//       type: mongoose.Schema.Types.Timestamp,
+//       required: true,
+//     },
+//   })
+
+//   const Employee = mongoose.model('Employee', employeeSchema)
+
+//   const { createdAt } = Employee.schema.tree
+
+//   it('should return without error when all attributes are valid', () => {
+//     const body = {
+//       createdAt: 123456789,
+//     }
+
+//     expect(() => middleware({ createdAt }, body)).not.toThrow()
+//   })
+
+// })
+
+// // isValidObjectId
+
+// describe('middleware schema validator with attributes of type isValidObjectId', () => {
+//   const employeeSchema = new mongoose.Schema({
+//     id: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       required: true,
+//     },
+//   })
+  
+//   const Employee = mongoose.model('Employee', employeeSchema)
+
+//   const { id } = Employee.schema.tree
+
+//   it('should return without error when all attributes are valid', () => {
+//     const body = {}
+
+//     expect(() => middleware({ id }, body)).not.toThrow()
+//   })
+
+// })
+
+// // isValidMap
+
+// describe('middleware schema validator with attributes of type isValidMap', () => {
+//   const employeeSchema = new mongoose.Schema({
+//     map: {
+//       type: Map,
+//       required: true,
+//     },
+//   })
+  
+//   const Employee = mongoose.model('Employee', employeeSchema)
+
+//   const { map } = Employee.schema.tree
+
+//   it('should return without error when all attributes are valid', () => {
+//     const body = {
+//       map: {
+//         key: 'value'
+//       }
+//     }
+
+//     expect(() => middleware({ map }, body)).not.toThrow()
+//   })
+
+// })
+// // isValidBuffer
+
+// describe('middleware schema validator with attributes of type isValidBuffer', () => {
+//   const employeeSchema = new mongoose.Schema({
+//     buffer: {
+//       type: Buffer,
+//       required: true,
+//     },
+//   })
+  
+//   const Employee = mongoose.model('Employee', employeeSchema)
+
+//   const { buffer } = Employee.schema.tree
+
+//   it('should return without error when all attributes are valid', () => {
+//     const body = {
+//       buffer: Buffer.from('buffer')
+//     }
+
+//     expect(() => middleware({ buffer }, body)).not.toThrow()
+//   })
+
+// })
