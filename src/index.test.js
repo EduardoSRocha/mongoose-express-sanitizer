@@ -395,3 +395,141 @@ describe('middleware schema validator with attributes of type date', () => {
     })
   })
 })
+
+describe('middleware schema validator with attributes of type array', () => {
+  const socialNetworkSchema = new mongoose.Schema({
+    hobbies: {
+      type: Array,
+      required: true,
+    },
+    friends: {
+      type: Array,
+      enum: ['friend'],
+      of: String,
+    },
+  })
+
+  const SocialNetwork = mongoose.model('socialNetwork', socialNetworkSchema)
+
+  const { hobbies, friends } = SocialNetwork.schema.tree
+
+  it('should return without error when all attributes are valid', () => {
+    const body = {
+      hobbies: ['hobby'],
+      friends: ['friend'],
+    }
+
+    expect(() => middleware({ hobbies, friends }, body)).not.toThrow()
+  })
+
+  it('should return without error when the attribute is not required and null is sended', () => {
+    const body = {
+      friends: null,
+    }
+
+    expect(() => middleware({ friends }, body)).not.toThrow()
+  })
+
+  it('should return without error when the attribute is not required and undefined is sended', () => {
+    const body = {
+      friends: undefined,
+    }
+
+    expect(() => middleware({ friends }, body)).not.toThrow()
+  })
+
+  it('should return an error when enum attribute is not valid', () => {
+    const body = {
+      hobbies: ['hobby'],
+      friends: ['joao', 'maria'],
+    }
+
+    expect(() => middleware({ hobbies, friends }, body)).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'Invalid value in the array. The values must be one of friend.'
+    })
+  })
+
+  it('should return an error when the required attribute is not sended', () => {
+    expect(() => middleware({ hobbies }, {})).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'The attribute is required.'
+    })
+  })
+
+  it('should return an error when the required attribute is null', () => {
+    const body = {
+      hobbies: null
+    }
+
+    expect(() => middleware({ hobbies }, body)).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'The attribute is required.'
+    })
+  })
+
+  it('should return an error when the required attribute is undefined', () => {
+    const body = {
+      hobbies: undefined
+    }
+
+    expect(() => middleware({ hobbies }, body)).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'The attribute is required.'
+    })
+  })
+
+})
+
+describe('middleware schema validator with attributes of type object', () => {
+  const employeeSchema = new mongoose.Schema({
+    address: {
+      type: Object,
+      required: true,
+    },
+    contact: {
+      type: Object,
+      of: String,
+    },
+  })
+
+  const Employee = mongoose.model('Employee', employeeSchema)
+
+  const { address, contact } = Employee.schema.tree
+
+  it('should return without error when all attributes are valid', () => {
+    const body = {
+      address: {
+        street: 'street',
+        number: 123,
+      },
+      contact: {
+        phone: '123456789',
+        email: 'email@email.com'
+      },
+    }
+
+    expect(() => middleware({ address, contact }, body)).not.toThrow()
+  })
+
+  it('should return without error when the attribute is not required and null is sended', () => {
+    const body = {
+      contact: null,
+    }
+
+    expect(() => middleware({ contact }, body)).not.toThrow()
+  })
+
+  it('should return without error when the attribute is not required and undefined is sended', () => {
+    const body = {
+      contact: undefined,
+    }
+
+    expect(() => middleware({ contact }, body)).not.toThrow()
+  })
+
+})
