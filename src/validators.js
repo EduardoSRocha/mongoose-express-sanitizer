@@ -38,7 +38,7 @@ const isDate = (schemaAttribute, value) => {
   if(!schemaAttribute.required && (value === undefined || value === null)) return
   if (!(value instanceof Date && !isNaN(value))) {
     throw {
-      message: `Expected a valid Date object, but received '${value}'.`,
+      message: `Expected a valid Date object, but received '${typeof value}'.`,
       httpErrorCode: 400,
       internalErrorCode: 1003,
     }

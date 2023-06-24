@@ -325,3 +325,73 @@ describe('middleware schema validator with attributes of type boolean', () => {
     })
   })
 })
+
+describe('middleware schema validator with attributes of type date', () => {
+  const userSchema = new mongoose.Schema({
+    birthDate: {
+      type: Date,
+      required: true,
+    },
+    lastLogin: {
+      type: Date,
+      default: Date.now,
+    },
+  })
+
+  const User = mongoose.model('User', userSchema)
+
+  const { birthDate, lastLogin } = User.schema.tree
+
+  it('should return without error when all attributes are valid', () => {
+    const body = {
+      birthDate: new Date(),
+      lastLogin: new Date(),
+    }
+
+    expect(() => middleware({ birthDate, lastLogin }, body)).not.toThrow()
+  })
+
+  it('should return an error when the required attribute is not sended', () => {
+    expect(() => middleware({ birthDate }, {})).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'The attribute is required.'
+    })
+  })
+
+  it('should return an error when the required attribute is null', () => {
+    const body = {
+      birthDate: null
+    }
+
+    expect(() => middleware({ birthDate }, body)).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'The attribute is required.'
+    })
+  })
+
+  it('should return an error when the required attribute is undefined', () => {
+    const body = {
+      birthDate: undefined
+    }
+
+    expect(() => middleware({ birthDate }, body)).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'The attribute is required.'
+    })
+  })
+
+  it('should return an error when the attribute is not a date', () => {
+    const body = {
+      birthDate: 'birthDate'
+    }
+
+    expect(() => middleware({ birthDate }, body)).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'Expected a valid Date object, but received \'string\'.'
+    })
+  })
+})

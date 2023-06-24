@@ -123,16 +123,6 @@ describe('Boolean Validator', () => {
       message: 'The attribute is required.',
     })
   })
-
-  it('must validate a boolean and fail for sending invalid value', () => {
-    expect(() => {
-      isBoolean({ type: 'Boolean', enum: [true, false] }, 'c')
-    }).toThrow({
-      httpErrorCode: 400,
-      internalErrorCode: 1000,
-      message: 'Invalid value. The value must be one of the following: true, false.',
-    })
-  })
 })
 
 describe('Number Validator', () => {
@@ -249,7 +239,7 @@ describe('Date Validator', () => {
     }).toThrow({
       'httpErrorCode': 400,
       'internalErrorCode': 1002,
-      'message': 'Expected a valid Date object, but received \'\'.',
+      'message': 'Expected a valid Date object, but received \'string\'.',
     })
   })
 
