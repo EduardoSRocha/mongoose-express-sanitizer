@@ -14,6 +14,7 @@ import {
 import mongoose from 'mongoose'
 
 const middleware = (schemaTree, data) => sanitize(schemaTree, data)
+
 const sanitize = (schemaTree, data) => {
   Object.keys(schemaTree).forEach(key => {
     // if schemaTree[key] is an object

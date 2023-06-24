@@ -1,7 +1,26 @@
 {
   "name": "mongoose-express-sanitizer",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "main": "dist/index.js",
+  "description": "A simple express middleware to sanitize request parameters with mongoose schema",
+  "keywords": [
+    "mongoose",
+    "express",
+    "sanitizer",
+    "middleware",
+    "validation",
+    "sanitize",
+    "sanitize mongoose",
+    "sanitize express",
+    "sanitize middleware",
+    "sanitize validation"
+  ],
+  "author": "Eduardo da Silva Rocha",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EddieUFSM/mongoose-express-sanitizer.git"
+  },
   "files": [
     "dist"
   ],
@@ -16,6 +35,13 @@
     "testEnvironment": "node",
     "testRunner": "jasmine2"
   },
+  "maintainers": [
+    {
+      "name": "Eduardo da Silva Rocha",
+      "email": "eddie.maneki@gmail.com",
+      "company": "Uonni"
+    }
+  ],
   "devDependencies": {
     "@babel/cli": "^7.17.6",
     "@babel/eslint-parser": "^7.16.5",
