@@ -1,51 +1,28 @@
 import {
-  getValidationFunction,
   isArray,
   isBoolean,
   isDate,
-  isDateString,
+  isDecimal128,
   isNumber,
   isString,
   isTimestamp,
-  validateEnum,
-  validateRequired
+  isValidObjectId,
+  isValidMap,
+  isValidBuffer
 } from './validators.js'
 
-const middleware = (schema, attribute) =>
-  (req) =>
-    sanitize(schema, attribute, req)
+const middleware = (schemaTree, data) => sanitize(schemaTree, data)
 
-const sanitize = (schemaTree, req, reqAttribute, next) => {
-  for (const attribute in schemaTree) {
-    if (typeof schemaTree[attribute] === 'object') {
-      // Handle object fields
-      for (const subAttribute in schemaTree[attribute]) {
-        const subSchemaAttribute = schemaTree[attribute][subAttribute]
-        const paramReceived =
-            req[reqAttribute] &&
-            req[reqAttribute][attribute] &&
-            req[reqAttribute][attribute][subAttribute]
-        validateElementOfSchema(subSchemaAttribute, paramReceived)
-      }
-    } else {
-      // Handle simple fields
-      const paramReceived = req[reqAttribute] && req[reqAttribute][attribute]
-      validateElementOfSchema(schemaTree[attribute], paramReceived)
-    }
+const sanitize = (schemaTree, data) => Object.keys(schemaTree).forEach(key => {
+  validateElementOfSchema(schemaTree[key], data[key])  
+  if (typeof value === 'object' && data[key] !== null) {
+    // if schemaTree has the attribute, validate it
+    validateElementOfSchema(schemaTree[key], data[key])
+    sanitize(schemaTree[key], data[key])
   }
-    
-  next()
-}
-    
-const validateElementOfSchema = (schemaAttribute, paramReceived) => {
-  if (schemaAttribute.required) {
-    validateRequired(paramReceived, schemaAttribute)
-  }
-    
-  if (schemaAttribute.enum) {
-    validateEnum(paramReceived, schemaAttribute, schemaAttribute.enum)
-  }
-    
+})
+
+const validateElementOfSchema = (schemaAttribute, paramReceived) => {    
   switch (schemaAttribute.type) {
   case String:
     isString(schemaAttribute, paramReceived)
@@ -54,22 +31,28 @@ const validateElementOfSchema = (schemaAttribute, paramReceived) => {
     isNumber(schemaAttribute, paramReceived)
     break
   case Boolean:
-    isBoolean(paramReceived)
+    isBoolean(schemaAttribute, paramReceived)
     break
   case Array:
     isArray(schemaAttribute, paramReceived)
     break
   case Date:
-    isDate(paramReceived)
+    isDate(schemaAttribute, paramReceived)
     break
-  case 'DateString':
-    isDateString(paramReceived)
+  case 'Map':
+    isValidMap(schemaAttribute, paramReceived)
     break
   case 'Timestamp':
-    isTimestamp(paramReceived)
+    isTimestamp(schemaAttribute, paramReceived)
     break
-  case 'validate':
-    getValidationFunction(schemaAttribute, 'validate')
+  case 'Decimal128':
+    isDecimal128(schemaAttribute, paramReceived)
+    break
+  case 'ObjectId':
+    isValidObjectId(schemaAttribute, paramReceived)
+    break
+  case 'Buffer':
+    isValidBuffer(schemaAttribute, paramReceived)
     break
   default:
     break

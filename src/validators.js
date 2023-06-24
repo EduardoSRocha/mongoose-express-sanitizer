@@ -1,42 +1,34 @@
 import mongoose from 'mongoose'
 
-const isRequired = (attributeValue) => {
-  if (attributeValue === undefined || attributeValue === null || attributeValue === '') {
+const isArray = (schemaAttribute, value) => {
+  if(schemaAttribute.required) isRequired(value)
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+  if(schemaAttribute.enum) verifyValidEnumForArray(schemaAttribute.enum, value)
+  if(schemaAttribute.max) verifyMaxLengthArray(schemaAttribute.max, value)
+  if(schemaAttribute.min) verifyMinLengthArray(schemaAttribute.min, value)
+  if (!Array.isArray(value)) {
     throw { 
-      message: 'Attribute is required.',
+      message: `Expected Array, but received '${typeof value}'.`,
       httpErrorCode: 400,
-      internalErrorCode: 1000
-    } 
+      internalErrorCode: 1007
+    }
   }
 }
-  
-const isString =(schemaAttribute, value) => {
+
+const isBoolean = (schemaAttribute, value) => {
   if(schemaAttribute.required) isRequired(value)
-  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
-  if(!schemaAttribute.required && (value === undefined || value === null || value === '')) return
-  if (typeof value !== 'string') {
-    throw { 
-      message: `Expected '${value}', but received '${typeof value}'.`,
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+  if (typeof value !== 'boolean') {
+    throw {
+      message: `Expected a boolean, but received '${typeof value}'.`,
       httpErrorCode: 400,
-      internalErrorCode: 1001
-    } 
+      internalErrorCode: 1003
+    }
   }
   return
 }
 
-const isNumber = (schemaAttribute, value)=> {
-  if(schemaAttribute.required) isRequired(value)
-  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
-  if(!schemaAttribute.required && (value === undefined || value === null)) return
-  if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
-  if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
-  if (typeof value !== 'number') throw { 
-    message: `Expected '${value}', but received '${typeof value}'.`,
-    httpErrorCode: 400,
-    internalErrorCode: 1002
-  }
-  return
-}
+const isConvertableToDecimal128 = (value) => typeof value !== 'string' && typeof value !== 'number'? false : true
 
 const isDate = (schemaAttribute, value) => {
   if(schemaAttribute.required) isRequired(value)
@@ -52,7 +44,47 @@ const isDate = (schemaAttribute, value) => {
     }
   }
 }
+
+const isNumber = (schemaAttribute, value)=> {
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
+  if(!schemaAttribute.required && (value === undefined || value === null)) return
+  if(schemaAttribute.max || schemaAttribute.min === 0) verifyMaxValue(schemaAttribute.max, value)
+  if(schemaAttribute.min || schemaAttribute.min === 0) verifyMinValue(schemaAttribute.min, value)
+  if (typeof value !== 'number') throw { 
+    message: `Expected a number, but received '${typeof value}'.`,
+    httpErrorCode: 400,
+    internalErrorCode: 1002
+  }
+  return
+}
+
+const isRequired = (value) => {
+  if (value === undefined || value === null || value === '') {
+    throw { 
+      message: 'The attribute is required.',
+      httpErrorCode: 400,
+      internalErrorCode: 1000
+    } 
+  }
+}
   
+const isString =(schemaAttribute, value) => {
+  if(schemaAttribute.required) isRequired(value)
+  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
+  if(!schemaAttribute.required && (value === undefined || value === null || value === '')) return
+  if(schemaAttribute.maxlength) verifyMaxLengthString(schemaAttribute.maxlength, value)
+  if(schemaAttribute.minlength) verifyMinLengthString(schemaAttribute.minlength, value)
+  if (typeof value !== 'string') {
+    throw { 
+      message: `Expected a string, but received '${typeof value}'.`,
+      httpErrorCode: 400,
+      internalErrorCode: 1001
+    } 
+  }
+  return
+}
+
 const isTimestamp = (schemaAttribute, value) => {
   if(schemaAttribute.required) isRequired(value)
   if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
@@ -95,21 +127,6 @@ const isTimestamp = (schemaAttribute, value) => {
   }
 }
 
-const isArray = (schemaAttribute, value) => {
-  if(schemaAttribute.required) isRequired(value)
-  if(!schemaAttribute.required && (value === undefined || value === null)) return
-  if(schemaAttribute.enum) verifyValidEnumForArray(schemaAttribute.enum, value)
-  if(schemaAttribute.max) verifyMaxLengthArray(schemaAttribute.max, value)
-  if(schemaAttribute.min) verifyMinLengthArray(schemaAttribute.min, value)
-  if (!Array.isArray(value)) {
-    throw { 
-      message: `Expected Array, but received '${typeof value}'.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1007
-    }
-  }
-}
-
 const isValidObjectId = (schemaAttribute, value) => {
   if(schemaAttribute.required) isRequired(value)
   if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
@@ -123,8 +140,6 @@ const isValidObjectId = (schemaAttribute, value) => {
       internalErrorCode: 1001
     } 
   }
-
-  console.log('*************************************', value, value.length, )
   return
 }
 
@@ -143,10 +158,6 @@ const isValidBuffer = (schemaAttribute, value) => {
   }
   return
 }
-
-const isConvertableToDecimal128 = (value) => typeof value !== 'string' && typeof value !== 'number'? false : true
-
-const validateNumericString = (value) => typeof value === 'string'? /^[\d.]+$/.test(value) : true
 
 const isValidDecimal128 = (schemaAttribute, value) => {
   if(schemaAttribute.required) isRequired(value)
@@ -202,6 +213,8 @@ const isValidMap = (schemaAttribute, value) => {
   }
 }
 
+const validateNumericString = (value) => typeof value === 'string'? /^[\d.]+$/.test(value) : true
+
 const verifyEnumValue = (schemaAttribute, value) => {
   if (!schemaAttribute.enum.includes(value)) {
     throw { 
@@ -232,6 +245,26 @@ const verifyMaxLengthArray = (maxLength, attribute) => {
   }
 }
 
+const verifyMinLengthString = (minLength, attribute) => {
+  if (attribute.length < minLength) {
+    throw {
+      message: `The string length must be at least ${minLength}.`,
+      httpErrorCode: 400,
+      internalErrorCode: 1008,
+    }
+  }
+}
+
+const verifyMaxLengthString = (maxLength, attribute) => {
+  if (attribute.length > maxLength) {
+    throw {
+      message: `The string length must not exceed ${maxLength}.`,
+      httpErrorCode: 400,
+      internalErrorCode: 1009,
+    }
+  }
+}
+
 const verifyValidEnumForArray = (enumValues, attribute) => {
   if (!Array.isArray(attribute) || !attribute.every((value) => enumValues.includes(value))) {
     throw {
@@ -243,6 +276,7 @@ const verifyValidEnumForArray = (enumValues, attribute) => {
 }
 
 const verifyMinValue = (min, attribute) => {
+  
   if (attribute < min) {
     throw { 
       message: `Value ${attribute} is less than the minimum value setted.`,
@@ -263,13 +297,14 @@ const verifyMaxValue = (max, attribute) => {
 }
 
 module.exports = {
+  isArray,
+  isBoolean,
+  isDate,
   isNumber,
   isString,
   isTimestamp,
-  isDate,
-  isArray,
-  isValidObjectId,
   isValidBuffer,
   isValidDecimal128,
-  isValidMap
+  isValidMap,
+  isValidObjectId,
 }
