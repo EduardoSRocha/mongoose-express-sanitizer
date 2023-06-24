@@ -244,38 +244,38 @@ describe('Date Validator', () => {
   })
 
   it('should try validate an Date with fail passing a date out of minimum setted', () => {
-    const min = new Date('01-01-2000')
-    const value =  new Date('01-01-1999')
     expect(() => {
+      const min = new Date('01-01-2000')
+      const value =  new Date('01-01-1999')
       isDate({ type: 'Date', min: min}, value)
     }).toThrow({
       'httpErrorCode': 400,
       'internalErrorCode': 1002,
-      'message': `Value ${value} is less than the minimum value setted.`,
+      'message': 'Value Fri Jan 01 1999 00:00:00 GMT-0200 (Brasilia Summer Time) is less than the minimum value setted.',
     })
   })
 
   it('should try validate an Date with fail passing a date out of maximum setted', () => {
-    const max =  new Date('01-01-1999')
-    const value = new Date('01-01-2000')
     expect(() => {
+      const max =  new Date('01-01-1999')
+      const value = new Date('01-01-2000')
       isDate({ type: 'Date', max: max}, value)
     }).toThrow({
       'httpErrorCode': 400,
       'internalErrorCode': 1002,
-      'message': `Value ${value} is greater than the maximum value setted.`,
+      'message': 'Value Sat Jan 01 2000 00:00:00 GMT-0200 (Brasilia Summer Time) is greater than the maximum value setted.',
     })
   })
 
   it('should try validate an Date with fail passing a date out of enum setted', () => {
-    const validValue =  new Date('01-01-1999')
-    const value = new Date('01-01-2000')
     expect(() => {
+      const validValue =  new Date('01-01-1999')
+      const value = new Date('01-01-2000')
       isDate({ type: 'Date', enum: [validValue]}, value)
     }).toThrow({
       'httpErrorCode': 400,
       'internalErrorCode': 1002,
-      'message': `Invalid value. The value must be one of the following: ${validValue}.`,
+      'message': 'Invalid value. The value must be one of the following: Fri Jan 01 1999 00:00:00 GMT-0200 (Brasilia Summer Time).',
     })
   })
 
