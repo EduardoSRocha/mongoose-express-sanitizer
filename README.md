@@ -1,4 +1,4 @@
-# mongoose-express-sanitizer [![NPM version](https://badge.fury.io/js/mongoose-express-sanitizer.svg)](https://npmjs.org/package/mongoose-express-sanitizer) [![Build Status](https://travis-ci.org/EddieUFSM/mongoose-express-sanitizer.svg?branch=master)](https://travis-ci.org/EddieUFSM/mongoose-express-sanitizer)
+# mongoose-express-sanitizer [![NPM version](https://badge.fury.io/js/mongoose-express-sanitizer.svg)](https://npmjs.org/package/mongoose-express-sanitizer) 
 
 ## About the Library
 
@@ -139,3 +139,19 @@ app.post('/users', middleware({ name, email, password }, req.body), async (req, 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
 ```
+
+## License
+
+This project uses the following license: [MIT](Eduardo Rocha).
+
+## Contact
+
+If you want to contact me you can reach me at github.com/EddieUFSM.
+
+## Acknowledgements
+
+This library was inspired by the following projects:
+
+- [express-sanitizer]
+- [bodymen]
+- [querymen]
