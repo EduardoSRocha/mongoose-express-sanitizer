@@ -1,6 +1,6 @@
 import {
   middleware,
-} from './'
+} from '.'
 import mongoose from 'mongoose'
 
 // String
