@@ -1,7 +1,6 @@
 import {
   isNumber,
   isString,
-  isTimestamp,
   isDate,
   isArray,
   isValidObjectId,
@@ -319,112 +318,6 @@ describe('Array Validator', () => {
       'message': 'The attribute is required.',
     })
   })
-
-})
-
-describe('Timestamp Validator', () => {
-  it('should validate a number with success', () => {
-    expect(() => isTimestamp({ type: 'Timestamp'}, 123456789)).not.toThrow()
-  })
-
-  it('should validate a number with success passing a null value without required setted', () => {
-    expect(() => isTimestamp({ type: 'Timestamp'}, null)).not.toThrow()
-  })
-
-  it('should validate a number with success passing a undefined value without required setted', () => {
-    expect(() => isTimestamp({ type: 'Timestamp'}, undefined)).not.toThrow()
-  })
-
-  it('should validate a number with error passing a null value with required setted', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp', required: true}, null)
-    }).toThrow({
-      'httpErrorCode': 400,
-      'internalErrorCode': 1002,
-      'message': 'The attribute is required.',
-    })
-  })
-
-  it('should validate a number with error passing a undefined value with required setted', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp', required: true}, undefined)
-    }).toThrow({
-      'httpErrorCode': 400,
-      'internalErrorCode': 1002,
-      'message': 'The attribute is required.',
-    })
-  })
-
-  it('must validate a number and fail for sending a non-number attribute', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp'}, 'not a number')
-    }).toThrow({
-      httpErrorCode: 400,
-      internalErrorCode: 1005,
-      message: 'Invalid timestamp.',
-    })
-  })
-
-  it('must validate a number and fail for sending a number less than 0', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp'}, -1)
-    }).toThrow({
-      httpErrorCode: 400,
-      internalErrorCode: 1005,
-      message: 'Invalid timestamp.',
-    })
-  })
-
-  it('must validate a number and fail for sending a number greater than 9999999999999', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp'}, 10000000000000)
-    }).toThrow({
-      httpErrorCode: 400,
-      internalErrorCode: 1005,
-      message: 'Invalid timestamp.',
-    })
-  })
-
-  it('must validate a number and fail for sending a number with decimal places', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp'}, 1.1)
-    }).toThrow({
-      httpErrorCode: 400,
-      internalErrorCode: 1005,
-      message: 'Invalid timestamp.',
-    })
-  })
-
-  it('must validate a number and fail for sending invalid not enum value', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp', enum: [1]}, 2)
-    }).toThrow({
-      httpErrorCode: 400,
-      internalErrorCode: 1002,
-      message: 'Invalid value. The value must be one of the following: 1.',
-    })
-  })
-
-  it('must validate a number and fail for sending a value bellow to the minimum setted', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp', min: 2}, 1)
-    }).toThrow({
-      httpErrorCode: 400,
-      internalErrorCode: 1002,
-      message: 'Value 1 is less than the minimum value setted.',
-    })
-  })
-
-  it('must validate a number and fail for sending a value above to the maximum setted', () => {
-    expect(() => {
-      isTimestamp({ type: 'Timestamp', max: 1}, 2)
-    }).toThrow({
-      httpErrorCode: 400,
-      internalErrorCode: 1002,
-      message: 'Value 2 is greater than the maximum value setted.',
-    })
-  })
-
 })
 
 describe('ObjectId Validator', () => {
@@ -499,9 +392,6 @@ describe('ObjectId Validator', () => {
       message: 'Invalid ObjectId.',
     })
   })  
-
-
-
 })
 
 describe('Buffer Validator', () => {

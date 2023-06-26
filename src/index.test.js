@@ -4,7 +4,6 @@ import {
 import mongoose from 'mongoose'
 
 // String
-
 describe('middleware schema validator with attributes of type string', () => {
   const taskSchema = new mongoose.Schema({
     title: {
@@ -547,102 +546,97 @@ describe('middleware schema validator with attributes of type object', () => {
 
 // isDecimal128
 
-// describe('middleware schema validator with attributes of type isDecimal128', () => {
-//   const employeeSchema = new mongoose.Schema({
-//     salary: {
-//       type: mongoose.Schema.Types.Decimal128,
-//       required: true,
-//     },
-//   })
+describe('middleware schema validator with attributes of type isDecimal128', () => {
+  const carSchema = new mongoose.Schema({
+    price: {
+      type: mongoose.Schema.Types.Decimal128,
+      required: true,
+    },
+    discount: {
+      type: mongoose.Schema.Types.Decimal128,
+      required: false,
+      enum: [0.1, 0.2, 0.3, 0.4, 0.5],
+    },
+    tax: {
+      type: mongoose.Schema.Types.Decimal128,
+    }
+  })
 
-//   const Employee = mongoose.model('Employee', employeeSchema)
+  const Car = mongoose.model('Car', carSchema)
 
-//   const { salary } = Employee.schema.tree
+  const { price, discount, tax } = Car.schema.tree
 
-//   it('should return without error when all attributes are valid', () => {
-//     const body = {
-//       salary: 123.45,
-//     }
+  it('should return without error when all attributes are valid', () => {
+    const body = {
+      price: 123.45,
+      discount: 0.1,
+      tax: 0.2
+    }
 
-//     expect(() => middleware({ salary }, body)).not.toThrow()
-//   })
+    expect(() => middleware({  price, discount, tax }, body)).not.toThrow()
+  })
 
-//   it('should return without error when the attribute is not required and null is sended', () => {
-//     const body = {
-//       salary: null,
-//     }
+  it('should return without error when the attribute is not required and null is sended', () => {
+    const body = {
+      price: 123.45,
+      discount: null, 
+      tax: null
+    }
 
-//     expect(() => middleware({ salary }, body)).not.toThrow()
-//   })
+    expect(() => middleware({ price, discount, tax }, body)).not.toThrow()
+  })
 
-//   it('should return without error when the attribute is not required and undefined is sended', () => {
-//     const body = {
-//       salary: undefined,
-//     }
+  it('should return without error when the attribute is not required and undefined is sended', () => {
+    const body = {
+      price: 123.45,
+      discount: undefined,
+    }
 
-//     expect(() => middleware({ salary }, body)).not.toThrow()
-//   })
+    expect(() => middleware({ price, discount }, body)).not.toThrow()
+  })
 
-//   it('should return an error when the attribute is not a decimal128', () => {
-//     const body = {
-//       salary: 'salary',
-//     }
+  it('should return an error when the attribute is not a decimal128', () => {
+    const body = {
+      price: 'price',
+    }
 
-//     expect(() => middleware({ salary }, body)).toThrow({
-//       httpErrorCode: 400,
-//       internalErrorCode: 1000,
-//       message: 'Expected a valid Decimal128 object, but received \'string\'.'
-//     })
-//   })
-// })
+    expect(() => middleware({ price }, body)).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'Invalid Decimal128.'
+    })
+  })
+})
 
-// // isTimestamp,
+// isValidObjectId
 
-// describe('middleware schema validator with attributes of type isTimestamp', () => {
-//   const employeeSchema = new mongoose.Schema({
-//     createdAt: {
-//       type: mongoose.Schema.Types.Timestamp,
-//       required: true,
-//     },
-//   })
-
-//   const Employee = mongoose.model('Employee', employeeSchema)
-
-//   const { createdAt } = Employee.schema.tree
-
-//   it('should return without error when all attributes are valid', () => {
-//     const body = {
-//       createdAt: 123456789,
-//     }
-
-//     expect(() => middleware({ createdAt }, body)).not.toThrow()
-//   })
-
-// })
-
-// // isValidObjectId
-
-// describe('middleware schema validator with attributes of type isValidObjectId', () => {
-//   const employeeSchema = new mongoose.Schema({
-//     id: {
-//       type: mongoose.Schema.Types.ObjectId,
-//       required: true,
-//     },
-//   })
+describe('middleware schema validator with attributes of type isValidObjectId', () => {
+  const lawSchema = new mongoose.Schema({
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
+    arincipalArticles: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: false,
+    },
+  })
   
-//   const Employee = mongoose.model('Employee', employeeSchema)
+  const Law = mongoose.model('Law', lawSchema)
 
-//   const { id } = Employee.schema.tree
+  const { id } = Law.schema.tree
 
-//   it('should return without error when all attributes are valid', () => {
-//     const body = {}
+  it('should return without error when all attributes are valid', () => {
+    const body = {
+      id: '5f8a9d9a9d9a9d9a9d9a9d9a'
+    }
 
-//     expect(() => middleware({ id }, body)).not.toThrow()
-//   })
+    expect(() => middleware({ id }, body)).not.toThrow()
+  })
 
-// })
+})
 
-// // isValidMap
+// isValidMap
 
 // describe('middleware schema validator with attributes of type isValidMap', () => {
 //   const employeeSchema = new mongoose.Schema({

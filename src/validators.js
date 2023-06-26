@@ -85,48 +85,6 @@ const isString =(schemaAttribute, value) => {
   return
 }
 
-const isTimestamp = (schemaAttribute, value) => {
-  if(schemaAttribute.required) isRequired(value)
-  if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
-  if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
-  if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
-  if(!schemaAttribute.required && (value === undefined || value === null)) return
-
-  if(value > 9999999999999) {
-    throw {
-      message: 'Invalid timestamp.',
-      httpErrorCode: 400,
-      internalErrorCode: 1004
-    }
-  }
-
-  if (value % 1 !== 0) {
-    throw {
-      message: 'Invalid timestamp.',
-      httpErrorCode: 400,
-      internalErrorCode: 1004
-    }
-  }
-  
-  if (typeof value !== 'number' || isNaN(value) || value <= 0) {
-    throw {
-      message: 'Invalid timestamp.',
-      httpErrorCode: 400,
-      internalErrorCode: 1004
-    }
-  }
-
-  const timestamp = new Date(value)
-
-  if (isNaN(timestamp.getTime())) {
-    throw {
-      message: 'Invalid timestamp.',
-      httpErrorCode: 400,
-      internalErrorCode: 1005
-    }
-  }
-}
-
 const isValidObjectId = (schemaAttribute, value) => {
   if(schemaAttribute.required) isRequired(value)
   if(schemaAttribute.enum) verifyEnumValue(schemaAttribute, value)
@@ -165,6 +123,7 @@ const isValidDecimal128 = (schemaAttribute, value) => {
   if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
   if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
   if(!schemaAttribute.required && (value === undefined || value === null)) return
+  
   if(!validateNumericString(value)) {
     throw {
       message: 'Invalid Decimal128.',
@@ -302,7 +261,6 @@ module.exports = {
   isDate,
   isNumber,
   isString,
-  isTimestamp,
   isValidBuffer,
   isValidDecimal128,
   isValidMap,

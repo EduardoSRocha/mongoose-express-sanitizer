@@ -2,20 +2,21 @@ import {
   isArray,
   isBoolean,
   isDate,
-  isDecimal128,
+  isValidDecimal128,
   isNumber,
   isString,
-  isTimestamp,
   isValidObjectId,
   isValidMap,
   isValidBuffer
 } from './validators.js'
 
-import mongoose from 'mongoose'
+import mongoose, { Schema }from 'mongoose'
 
 const middleware = (schemaTree, data) => sanitize(schemaTree, data)
 
 const sanitize = (schemaTree, data) => {
+  const teste = schemaTree
+  console.log(teste)
   Object.keys(schemaTree).forEach(key => {
     // if schemaTree[key] is an object
     if (typeof schemaTree[key] === 'object' && schemaTree[key] !== null) {
@@ -27,12 +28,12 @@ const sanitize = (schemaTree, data) => {
       }
       // if data has the attribute, validate it
       if (data[key]){
-        validateElementOfSchema(schemaTree[key], data[key])  
         if (typeof value === 'object' && data[key] !== null) {
           // if schemaTree has the attribute, validate it
           validateElementOfSchema(schemaTree[key], data[key])
           sanitize(schemaTree[key], data[key])
         }
+        validateElementOfSchema(schemaTree[key], data[key])  
       }
     }
   })
@@ -53,6 +54,12 @@ const sellectedAttributeType = (attribute) => {
 
 const validateElementOfSchema = (schemaAttribute, paramReceived) => {    
   const type = schemaAttribute.type ? schemaAttribute.type : sellectedAttributeType(schemaAttribute) 
+  const {
+    Decimal128,
+    ObjectId,
+    Buffer,
+    Map
+  } = Schema.Types
 
   switch (type) {
   case String:
@@ -73,16 +80,25 @@ const validateElementOfSchema = (schemaAttribute, paramReceived) => {
   case 'Map':
     isValidMap(schemaAttribute, paramReceived)
     break
-  case 'Timestamp':
-    isTimestamp(schemaAttribute, paramReceived)
+  case Map:
+    isValidMap(schemaAttribute, paramReceived)
     break
   case 'Decimal128':
-    isDecimal128(schemaAttribute, paramReceived)
+    isValidDecimal128(schemaAttribute, paramReceived)
+    break
+  case Decimal128:
+    isValidDecimal128(schemaAttribute, paramReceived)
     break
   case 'ObjectId':
     isValidObjectId(schemaAttribute, paramReceived)
     break
+  case ObjectId:
+    isValidObjectId(schemaAttribute, paramReceived)
+    break
   case 'Buffer':
+    isValidBuffer(schemaAttribute, paramReceived)
+    break
+  case Buffer:
     isValidBuffer(schemaAttribute, paramReceived)
     break
   default:
