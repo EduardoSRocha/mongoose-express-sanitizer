@@ -10,37 +10,47 @@ import {
   isValidBuffer
 } from './validators.js'
 
+const possibleTypes = [
+  'String',
+  'Number',
+  'Boolean',
+  'Array',
+  'Date',
+  'Map',
+  'Decimal128',
+  'ObjectId',
+  'Buffer'
+]
+
 import mongoose, { Schema }from 'mongoose'
 
 const middleware = (schemaTree, data) => sanitize(schemaTree, data)
 
 const sanitize = (schemaTree, data) => {
-  const teste = schemaTree
-  console.log(teste)
   Object.keys(schemaTree).forEach(key => {
-    // if schemaTree[key] is an object
-    if (typeof schemaTree[key] === 'object' && schemaTree[key] !== null) {
-      // if schemaTree has the attribute, validate it
-      if(schemaTree[key].required && !data[key]) throw {
-        message: `The attribute ${key} is required.`,
-        httpErrorCode: 400,
-        internalErrorCode: 1001
-      }
-      // if data has the attribute, validate it
-      if (data[key]){
-        if (typeof value === 'object' && data[key] !== null) {
-          // if schemaTree has the attribute, validate it
-          validateElementOfSchema(schemaTree[key], data[key])
-          sanitize(schemaTree[key], data[key])
+    const attribute = schemaTree[key]
+
+    if (typeof attribute === 'object' && attribute !== null) {
+      if (attribute.required && !data[key]) {
+        throw {
+          message: `The attribute ${key} is required.`,
+          httpErrorCode: 400,
+          internalErrorCode: 1001
         }
-        validateElementOfSchema(schemaTree[key], data[key])  
+      }
+
+      if (data[key]) {
+        if (typeof attribute === 'object' && typeof data[key] === 'object' && !Array.isArray(data[key])) {
+          sanitize(attribute, data[key])
+        } else {
+          validateElementOfSchema(attribute, data[key])
+        }
       }
     }
   })
 }
 
 const sellectedAttributeType = (attribute) => {
-  if (typeof attribute === 'string') return attribute
   if (attribute instanceof mongoose.Schema.Types.ObjectId) return 'ObjectId'
   if (attribute instanceof mongoose.Schema.Types.Decimal128) return 'Decimal128'
   if (attribute instanceof mongoose.Schema.Types.Buffer) return 'Buffer'
@@ -52,14 +62,37 @@ const sellectedAttributeType = (attribute) => {
   if (attribute instanceof mongoose.Schema.Types.Boolean) return 'Boolean'
 }
 
-const validateElementOfSchema = (schemaAttribute, paramReceived) => {    
-  const type = schemaAttribute.type ? schemaAttribute.type : sellectedAttributeType(schemaAttribute) 
+const getTypeFromString = (type) => {
+  if (typeof attribute === 'string' && possibleTypes.includes(type)) return type
+  throw {
+    message: 'Invalid type',
+    httpErrorCode: 400,
+    internalErrorCode: 1002
+  }
+}
+
+const validateElementOfSchema = (schemaAttribute, paramReceived) => {
   const {
     Decimal128,
     ObjectId,
-    Buffer,
-    Map
+    Buffer
   } = Schema.Types
+
+  let type = schemaAttribute.type ? schemaAttribute.type : sellectedAttributeType(schemaAttribute)
+
+  if (schemaAttribute.type === Map) {
+    isValidMap(schemaAttribute, paramReceived)
+    return
+  }
+
+  if (schemaAttribute.type === Buffer) {
+    isValidBuffer(schemaAttribute, paramReceived)
+    return
+  }
+
+  if (typeof type === 'string') {
+    type = getTypeFromString(type)
+  }
 
   switch (type) {
   case String:
@@ -77,33 +110,23 @@ const validateElementOfSchema = (schemaAttribute, paramReceived) => {
   case Date:
     isDate(schemaAttribute, paramReceived)
     break
-  case 'Map':
-    isValidMap(schemaAttribute, paramReceived)
-    break
-  case Map:
-    isValidMap(schemaAttribute, paramReceived)
-    break
-  case 'Decimal128':
-    isValidDecimal128(schemaAttribute, paramReceived)
-    break
   case Decimal128:
     isValidDecimal128(schemaAttribute, paramReceived)
     break
-  case 'ObjectId':
-    isValidObjectId(schemaAttribute, paramReceived)
-    break
   case ObjectId:
     isValidObjectId(schemaAttribute, paramReceived)
-    break
-  case 'Buffer':
-    isValidBuffer(schemaAttribute, paramReceived)
     break
   case Buffer:
     isValidBuffer(schemaAttribute, paramReceived)
     break
   default:
-    break
+    throw {
+      message: 'Invalid type',
+      httpErrorCode: 400,
+      internalErrorCode: 1002
+    }
   }
 }
+
 
 module.exports = { middleware }

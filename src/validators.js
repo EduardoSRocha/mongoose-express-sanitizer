@@ -1,4 +1,15 @@
 import mongoose from 'mongoose'
+const possibleTypes = [
+  'String',
+  'Number',
+  'Boolean',
+  'Array',
+  'Date',
+  'Map',
+  'Decimal128',
+  'ObjectId',
+  'Buffer'
+]
 
 const isArray = (schemaAttribute, value) => {
   if(schemaAttribute.required) isRequired(value)
@@ -148,26 +159,178 @@ const isValidMap = (schemaAttribute, value) => {
   if(schemaAttribute.max) verifyMaxValue(schemaAttribute.max, value)
   if(schemaAttribute.min) verifyMinValue(schemaAttribute.min, value)
   if(!schemaAttribute.required && (value === undefined || value === null)) return
-  const { of, validate } = schemaAttribute
-  if(typeof value !== 'object' ) {
+  const { of } = schemaAttribute
+
+  if(!(typeof value === 'object' || Array.isArray(value))) {
     throw {
       message: 'Invalid Map.',
       httpErrorCode: 400,
       internalErrorCode: 1001
     }
   }
-
-  if (typeof value !== 'object' || value === null) {
-    if (of && validate) {
-      for (const [, value] of value.entries()) {
-        if (!of.validate(value)) {
-          throw {
-            message: 'Invalid key to Map.',
-            httpErrorCode: 400,
-            internalErrorCode: 1001
-          }
+ 
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    for (let key in value) {
+      if (!isValidType(value[key], of)) {
+        throw {
+          message: `Invalid Map. The value of the key '${key}' must be a ${of}.`,
+          httpErrorCode: 400,
+          internalErrorCode: 1001
         }
       }
+    }
+  }
+
+  if(Array.isArray(value)) {
+    value.forEach((item, index) => {
+      if (!isValidType(item, of)) {
+        throw {
+          message: `Invalid Map. The value of the key '${index}' must be a ${of}.`,
+          httpErrorCode: 400,
+          internalErrorCode: 1001
+        }
+      }
+    })
+  }
+}
+
+const getMapTypeOf = (value) => {
+  if (typeof value === 'string' && possibleTypes.includes(value)) {
+    return value
+  }
+
+  if (value instanceof mongoose.Schema.Types.ObjectId) {
+    return 'ObjectId'
+  }
+  
+  if (value instanceof mongoose.Schema.Types.Decimal128) {
+    return 'Decimal128'
+  }
+
+  if (value instanceof mongoose.Schema.Types.Buffer) {
+    return 'Buffer'
+  }
+
+  if (value instanceof mongoose.Schema.Types.Map) {
+    return 'Map'
+  }
+
+  if (value instanceof mongoose.Schema.Types.Array) {
+    return 'Array'
+  }
+
+  if (value instanceof mongoose.Schema.Types.Date) {
+    return 'Date'
+  }
+
+  if (value instanceof mongoose.Schema.Types.Number) {
+    return 'Number'
+  }
+
+  if (value instanceof mongoose.Schema.Types.String) {
+    return 'String'
+  }
+
+  if (value instanceof mongoose.Schema.Types.Boolean) {
+    return 'Boolean'
+  }
+
+  if (typeof value === 'function') {
+    return value.schemaName || value.name
+  }
+
+  if (typeof value === 'object') {
+    if (value.type && value.type.schemaName === 'ObjectId') {
+      return 'ObjectId'
+    }
+    return 'Object'
+  }
+
+  if (Array.isArray(value)) {
+    return 'Array'
+  }
+
+  if (value instanceof Date) {
+    return 'Date'
+  }
+
+  if (typeof value === 'number') {
+    return 'Number'
+  }
+
+  if (typeof value === 'string') {
+    return 'String'
+  }
+
+  if (typeof value === 'boolean') {
+    return 'Boolean'
+  }
+}
+
+const isValidType = (value, type) => {
+  const {
+    Decimal128,
+    ObjectId,
+    Map
+  } = mongoose.Schema.Types
+
+  const typeOf = getMapTypeOf(type)
+
+  switch (typeOf) {
+  case 'Date':
+    return value instanceof Date
+  case 'ObjectId':
+    return value instanceof ObjectId || typeof value === 'string'
+  case 'Decimal128':
+    return value instanceof Decimal128 || typeof value === 'number'
+  case 'Buffer':
+    return Buffer.isBuffer(value)
+  case 'Array':
+    return Array.isArray(value)
+  case 'String':
+    return value instanceof String || typeof value === 'string'
+  case 'Number':
+    return value instanceof Number || typeof value === 'number'
+  case 'Boolean':
+    return value instanceof Boolean || typeof value === 'boolean'
+  case 'Map':
+    return value instanceof Map
+  default:
+    break
+  }
+
+  switch (type) {
+  case String:
+    return value instanceof String
+  case Number:
+    return value instanceof Number
+  case Boolean:
+    return value instanceof Boolean
+  case Array:
+    return value instanceof Array
+  case Date:
+    return value instanceof Date
+  case 'Map':
+    return typeof value !== 'object' || Array.isArray(value)
+  case Map:
+    return value instanceof Map
+  case 'Decimal128':
+    return validateNumericString(value)
+  case Decimal128:
+    return value instanceof Decimal128
+  case 'ObjectId':
+    return mongoose.Types.ObjectId.isValid(value) || (value.length === 24 && typeof value === 'string')
+  case ObjectId:
+    return value instanceof ObjectId
+  case 'Buffer':
+    return Buffer.isBuffer(value)
+  case Buffer:
+    return Buffer.isBuffer(value)
+  default:
+    throw {
+      message: `Type ${typeof value} not supported.`,
+      httpErrorCode: 400,
+      internalErrorCode: 1001
     }
   }
 }
@@ -266,3 +429,4 @@ module.exports = {
   isValidMap,
   isValidObjectId,
 }
+

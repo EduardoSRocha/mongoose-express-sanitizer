@@ -536,7 +536,7 @@ describe('Map Validator', () => {
   })
   const { preferences } = userSchema.tree
 
-  it('should validate a Map with success', () => {
+  it('should validate a Map of text with success', () => {
     expect(() => {
       isValidMap(preferences, { 'color': 'blue', 'language': 'english'})
     }).not.toThrow()

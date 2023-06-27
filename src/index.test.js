@@ -447,7 +447,7 @@ describe('middleware schema validator with attributes of type array', () => {
     expect(() => middleware({ friends }, body)).not.toThrow()
   })
 
-  it('should return an error when enum attribute is not valid', () => {
+  it('should return an error when Array enum attribute is not valid', () => {
     const body = {
       hobbies: ['hobby'],
       friends: ['joao', 'maria'],
@@ -526,7 +526,7 @@ describe('middleware schema validator with attributes of type object', () => {
 
   const { size, behavior } = Animal.schema.tree
 
-  it('should return without error when all attributes are valid', () => {
+  it('should return without error when all attributes of object with children are valid', () => {
     const body = {
       size: 'big',
       behavior: {
@@ -638,49 +638,150 @@ describe('middleware schema validator with attributes of type isValidObjectId', 
 
 // isValidMap
 
-// describe('middleware schema validator with attributes of type isValidMap', () => {
-//   const employeeSchema = new mongoose.Schema({
-//     map: {
-//       type: Map,
-//       required: true,
-//     },
-//   })
+describe('middleware schema validator with attributes of type isValidMap', () => {
+  const employeeSchema = new mongoose.Schema({
+    mapStringMongoose: {
+      type: Map,
+      of:  mongoose.Schema.Types.String,
+      required: true,
+    },
+    mapNumberMongoose: {
+      type: Map,
+      of:mongoose.Schema.Types.Number,
+      required: true,
+    },
+    mapBooleanMongoose: {
+      type: Map,
+      of: mongoose.Schema.Types.Boolean,
+      required: true,
+    },
+    mapDateMongoose: {
+      type: Map,
+      of: mongoose.Schema.Types.Date,
+      required: true,
+    },
+    mapDecimal128Mongoose: {
+      type: Map,
+      of:  mongoose.Schema.Types.Decimal128,
+      required: true,
+    },
+    mapObjectIdMongoose: {
+      type: Map,
+      of: {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+      required: true,
+    },
+    mapBufferMongoose: {
+      type: Map,
+      of: Buffer,
+      required: true,
+    }
+  })
   
-//   const Employee = mongoose.model('Employee', employeeSchema)
+  const Employee = mongoose.model('Employee', employeeSchema)
 
-//   const { map } = Employee.schema.tree
+  const { 
+    mapStringMongoose,
+    mapNumberMongoose,
+    mapBooleanMongoose,
+    mapDateMongoose,
+    mapDecimal128Mongoose,
+    mapObjectIdMongoose,
+    mapBufferMongoose
+  } = Employee.schema.tree
 
-//   it('should return without error when all attributes are valid', () => {
-//     const body = {
-//       map: {
-//         key: 'value'
-//       }
-//     }
+  it('should return without error when MAP of String are valid', () => {
+    const body = {
+      mapStringMongoose: ['test', 'test']
+    }
 
-//     expect(() => middleware({ map }, body)).not.toThrow()
-//   })
+    expect(() => middleware({ mapStringMongoose }, body)).not.toThrow()
+  })
 
-// })
-// // isValidBuffer
+  it('should return without error when MAP of Number are valid', () => {
+    const body = {
+      mapNumberMongoose: [1, 2]
+    }
 
-// describe('middleware schema validator with attributes of type isValidBuffer', () => {
-//   const employeeSchema = new mongoose.Schema({
-//     buffer: {
-//       type: Buffer,
-//       required: true,
-//     },
-//   })
+    expect(() => middleware({ mapNumberMongoose }, body)).not.toThrow()
+  })
+
+  it('should return without error when MAP of Boolean are valid', () => {
+    const body = {
+      mapBooleanMongoose: [true, false]
+    }
+
+    expect(() => middleware({ mapBooleanMongoose }, body)).not.toThrow()
+  })
+
+  it('should return without error when MAP of Date are valid', () => {
+    const validDate = new Date()
+    const body = {
+      mapDateMongoose: [validDate, validDate]
+    }
+
+    expect(() => middleware({ mapDateMongoose }, body)).not.toThrow()
+  })
+
+  it('should return without error when MAP of Decimal128 are valid', () => {
+    const body = {
+      mapDecimal128Mongoose: [123.45, 123.45]
+    }
+
+    expect(() => middleware({ mapDecimal128Mongoose }, body)).not.toThrow()
+  })
+
+  it('should return without error when MAP of ObjectId are valid', () => {
+    const body = {
+      mapObjectIdMongoose: ['5f8a9d9a9d9a9d9a9d9a9d9a', '5f8a9d9a9d9a9d9a9d9a9d9a']
+    }
+
+    expect(() => middleware({ mapObjectIdMongoose }, body)).not.toThrow()
+  })
+
+  it('should return without error when MAP of Buffer are valid', () => {
+    const validBuffer = Buffer.from('buffer')
+    const body = {
+      mapBufferMongoose: [validBuffer, validBuffer]
+    }
+
+    expect(() => middleware({ mapBufferMongoose }, body)).not.toThrow()
+  })
+
+  it('should return an error when the attribute is not a MAP', () => {
+    const body = {
+      mapStringMongoose: 'test'
+    }
+
+    expect(() => middleware({ mapStringMongoose }, body)).toThrow({
+      httpErrorCode: 400,
+      internalErrorCode: 1000,
+      message: 'Invalid Map.'
+    })
+  })
+})
+
+// isValidBuffer
+
+describe('middleware schema validator with attributes of type isValidBuffer', () => {
+  const fileSchema = new mongoose.Schema({
+    buffer: {
+      type: Buffer,
+      required: true,
+    },
+  })
   
-//   const Employee = mongoose.model('Employee', employeeSchema)
+  const File = mongoose.model('File', fileSchema)
 
-//   const { buffer } = Employee.schema.tree
+  const { buffer } = File.schema.tree
 
-//   it('should return without error when all attributes are valid', () => {
-//     const body = {
-//       buffer: Buffer.from('buffer')
-//     }
+  it('should return without error when all attributes are valid', () => {
+    const body = {
+      buffer: Buffer.from('buffer')
+    }
 
-//     expect(() => middleware({ buffer }, body)).not.toThrow()
-//   })
+    expect(() => middleware({ buffer }, body)).not.toThrow()
+  })
 
-// })
+})
