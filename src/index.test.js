@@ -127,7 +127,6 @@ describe('middleware schema validator with attributes of type string', () => {
 })
 
 // Number
-
 describe('middleware schema validator with attributes of type number', () => {
   const productSchema = new mongoose.Schema({
     price: {
@@ -261,7 +260,6 @@ describe('middleware schema validator with attributes of type number', () => {
 })
 
 // Boolean
-
 describe('middleware schema validator with attributes of type boolean', () => {
   const inscriptionSchema = new mongoose.Schema({
     isAvailable: {
@@ -332,7 +330,6 @@ describe('middleware schema validator with attributes of type boolean', () => {
 })
 
 // Date
-
 describe('middleware schema validator with attributes of type date', () => {
   const userSchema = new mongoose.Schema({
     birthDate: {
@@ -404,7 +401,6 @@ describe('middleware schema validator with attributes of type date', () => {
 })
 
 // Array
-
 describe('middleware schema validator with attributes of type array', () => {
   const socialNetworkSchema = new mongoose.Schema({
     hobbies: {
@@ -495,7 +491,6 @@ describe('middleware schema validator with attributes of type array', () => {
 })
 
 // Object
-
 describe('middleware schema validator with attributes of type object', () => {
   const animalSchema = new mongoose.Schema({
     species: String,
@@ -545,7 +540,6 @@ describe('middleware schema validator with attributes of type object', () => {
 })
 
 // isDecimal128
-
 describe('middleware schema validator with attributes of type isDecimal128', () => {
   const carSchema = new mongoose.Schema({
     price: {
@@ -609,7 +603,6 @@ describe('middleware schema validator with attributes of type isDecimal128', () 
 })
 
 // isValidObjectId
-
 describe('middleware schema validator with attributes of type isValidObjectId', () => {
   const lawSchema = new mongoose.Schema({
     id: {
@@ -637,7 +630,6 @@ describe('middleware schema validator with attributes of type isValidObjectId', 
 })
 
 // isValidMap
-
 describe('middleware schema validator with attributes of type isValidMap', () => {
   const employeeSchema = new mongoose.Schema({
     mapStringMongoose: {
@@ -763,7 +755,6 @@ describe('middleware schema validator with attributes of type isValidMap', () =>
 })
 
 // isValidBuffer
-
 describe('middleware schema validator with attributes of type isValidBuffer', () => {
   const fileSchema = new mongoose.Schema({
     buffer: {
