@@ -1,4 +1,5 @@
-# mongoose-express-sanitizer [![NPM version](https://badge.fury.io/js/mongoose-express-sanitizer.svg)](https://npmjs.org/package/mongoose-express-sanitizer) 
+<p align="center"> [![NPM version](https://badge.fury.io/js/mongoose-express-sanitizer.svg)](https://npmjs.org/package/mongoose-express-sanitizer) </p>
+<h1> mongoose-express-sanitizer </h1>
 
 ## About the Library
 
