@@ -1,5 +1,9 @@
-<p align="center"> [![NPM version](https://badge.fury.io/js/mongoose-express-sanitizer.svg)](https://npmjs.org/package/mongoose-express-sanitizer) </p>
-<h1> mongoose-express-sanitizer </h1>
+<h1 align="center"> mongoose-express-sanitizer </h1>
+
+<p align="center">
+  <img alt="Static Badge" src="https://badge.fury.io/js/mongoose-express-sanitizer.svg">
+  <img alt="Static Badge" src="https://npmjs.org/package/mongoose-express-sanitizer">
+</p>
 
 ## About the Library
 
