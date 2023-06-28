@@ -1,6 +1,6 @@
 {
   "name": "mongoose-express-sanitizer",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "main": "dist/index.js",
   "description": "A simple express middleware to sanitize request parameters with mongoose schema",
   "keywords": [
