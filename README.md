@@ -2,7 +2,6 @@
 
 <p align="center">
   <img alt="Static Badge" src="https://badge.fury.io/js/mongoose-express-sanitizer.svg">
-  <img alt="Static Badge" src="https://npmjs.org/package/mongoose-express-sanitizer">
 </p>
 
 ## About the Library
