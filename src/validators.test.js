@@ -34,7 +34,6 @@ describe('String Validator', () => {
       isString({ type: 'String', required: true }, 1)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1001,
       message: 'Expected a string, but received \'number\'.'
     })
   })
@@ -44,7 +43,6 @@ describe('String Validator', () => {
       isString({ type: 'String', required: true }, null)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -54,7 +52,6 @@ describe('String Validator', () => {
       isString({ type: 'String', required: true }, '')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -64,7 +61,6 @@ describe('String Validator', () => {
       isString({ type: 'String', required: true }, undefined)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -74,7 +70,6 @@ describe('String Validator', () => {
       isString({ type: 'String', enum: ['a', 'b'] }, 'c')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Invalid value. The value must be one of the following: a, b.',
     })
   })
@@ -98,7 +93,6 @@ describe('Boolean Validator', () => {
       isBoolean({ type: 'Boolean', required: true }, null)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -108,7 +102,6 @@ describe('Boolean Validator', () => {
       isBoolean({ type: 'Boolean', required: true }, '')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -118,7 +111,6 @@ describe('Boolean Validator', () => {
       isBoolean({ type: 'Boolean', required: true }, undefined)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -142,7 +134,6 @@ describe('Number Validator', () => {
       isNumber({ type: 'Number', required: true }, null)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -152,7 +143,6 @@ describe('Number Validator', () => {
       isNumber({ type: 'Number', required: true }, '')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -162,7 +152,6 @@ describe('Number Validator', () => {
       isNumber({ type: 'Number', required: true }, undefined)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute is required.',
     })
   })
@@ -172,7 +161,6 @@ describe('Number Validator', () => {
       isNumber({ type: 'Number', enum: [1, 2] }, 3)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Invalid value. The value must be one of the following: 1, 2.',
     })
   })
@@ -182,7 +170,6 @@ describe('Number Validator', () => {
       isNumber({ type: 'Number', min: 4 }, 3)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Value 3 is less than the minimum value setted.',
     })
   })
@@ -192,7 +179,6 @@ describe('Number Validator', () => {
       isNumber({ type: 'Number', max: 3 }, 4)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Value 4 is greater than the maximum value setted.',
     })
   })
@@ -217,7 +203,6 @@ describe('Date Validator', () => {
       isDate({ type: 'Date', required: true }, null)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -227,7 +212,6 @@ describe('Date Validator', () => {
       isDate({ type: 'Date', required: true }, undefined)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -237,7 +221,6 @@ describe('Date Validator', () => {
       isDate({ type: 'Date'}, '')
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'Expected a valid Date object, but received \'string\'.',
     })
   })
@@ -249,7 +232,6 @@ describe('Date Validator', () => {
       isDate({ type: 'Date', min: min}, value)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': `Value ${value} is less than the minimum value setted.`,
     })
   })
@@ -261,7 +243,6 @@ describe('Date Validator', () => {
       isDate({ type: 'Date', max: max}, value)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': `Value ${value} is greater than the maximum value setted.`,
     })
   })
@@ -273,7 +254,6 @@ describe('Date Validator', () => {
       isDate({ type: 'Date', enum: [validValue]}, value)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': `Invalid value. The value must be one of the following: ${validValue}.`,
     })
   })
@@ -304,7 +284,6 @@ describe('Array Validator', () => {
       isArray({ type: 'Array', required: true}, null)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -314,7 +293,6 @@ describe('Array Validator', () => {
       isArray({ type: 'Array', required: true}, undefined)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -338,7 +316,6 @@ describe('ObjectId Validator', () => {
       isValidObjectId({ type: 'ObjectId', required: true}, null)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })  
@@ -348,7 +325,6 @@ describe('ObjectId Validator', () => {
       isValidObjectId({ type: 'ObjectId', required: true}, undefined)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -358,7 +334,6 @@ describe('ObjectId Validator', () => {
       isValidObjectId({ type: 'ObjectId'}, 123)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid ObjectId.',
     })
   })
@@ -368,7 +343,6 @@ describe('ObjectId Validator', () => {
       isValidObjectId({ type: 'ObjectId'}, '12345678901234567890123')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid ObjectId.',
     })
   })
@@ -378,7 +352,6 @@ describe('ObjectId Validator', () => {
       isValidObjectId({ type: 'ObjectId'}, '1234567890123456789012345')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid ObjectId.',
     })
   })
@@ -388,7 +361,6 @@ describe('ObjectId Validator', () => {
       isValidObjectId({ type: 'ObjectId'}, '12345678901234567890123!')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid ObjectId.',
     })
   })  
@@ -415,7 +387,6 @@ describe('Buffer Validator', () => {
       isValidBuffer({ type: 'Buffer', required: true}, null)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -425,7 +396,6 @@ describe('Buffer Validator', () => {
       isValidBuffer({ type: 'Buffer', required: true}, undefined)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -435,7 +405,6 @@ describe('Buffer Validator', () => {
       isValidBuffer({ type: 'Buffer'}, 123)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid Buffer.',
     })
   })
@@ -445,7 +414,6 @@ describe('Buffer Validator', () => {
       isValidBuffer({ type: 'Buffer'}, '12345678901234567890123')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid Buffer.',
     })
   })
@@ -455,7 +423,6 @@ describe('Buffer Validator', () => {
       isValidBuffer({ type: 'Buffer'}, '1234567890123456789012345')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid Buffer.',
     })
   })
@@ -465,7 +432,6 @@ describe('Buffer Validator', () => {
       isValidBuffer({ type: 'Buffer'}, '12345678901234567890123!')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid Buffer.',
     })
   })
@@ -490,7 +456,6 @@ describe('Decimal128 Validator', () => {
       isValidDecimal128({ type: 'Decimal128', required: true}, null)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1002,
       message: 'The attribute is required.',
     })
   })
@@ -500,7 +465,6 @@ describe('Decimal128 Validator', () => {
       isValidDecimal128({ type: 'Decimal128', required: true}, undefined)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1002,
       message: 'The attribute is required.',
     })
   })
@@ -510,7 +474,6 @@ describe('Decimal128 Validator', () => {
       isValidDecimal128({ type: 'Decimal128'}, [])
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid Decimal128.',
     })
   })
@@ -520,7 +483,6 @@ describe('Decimal128 Validator', () => {
       isValidDecimal128({ type: 'Decimal128'}, '12345678901234567890123!')
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid Decimal128.',
     })
   })
@@ -555,7 +517,6 @@ describe('Map Validator', () => {
       isValidMap({ type: 'Map', required: true}, null)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -565,7 +526,6 @@ describe('Map Validator', () => {
       isValidMap({ type: 'Map', required: true}, undefined)
     }).toThrow({
       'httpErrorCode': 400,
-      'internalErrorCode': 1002,
       'message': 'The attribute is required.',
     })
   })
@@ -575,7 +535,6 @@ describe('Map Validator', () => {
       isValidMap({ type: 'Map'}, 1)
     }).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1005,
       message: 'Invalid Map.',
     })
   })

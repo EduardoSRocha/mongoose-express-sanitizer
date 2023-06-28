@@ -12,8 +12,7 @@ const sanitize = (schemaTree, data) => {
       if (attribute.required && !data[key]) {
         throw {
           message: `The attribute ${key} is required.`,
-          httpErrorCode: 400,
-          internalErrorCode: 1001
+          httpErrorCode: 400
         }
       }
 
@@ -29,3 +28,4 @@ const sanitize = (schemaTree, data) => {
 }
 
 module.exports = { middleware }
+export default middleware

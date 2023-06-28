@@ -60,7 +60,6 @@ describe('middleware schema validator with attributes of type string', () => {
     
     expect(() => middleware({ title, description, status, priority }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Expected a string, but received \'number\'.'
     }) 
   })
@@ -74,7 +73,6 @@ describe('middleware schema validator with attributes of type string', () => {
     
     expect(() => middleware({ title, description, status, priority }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute title is required.'
     })
   })    
@@ -89,7 +87,6 @@ describe('middleware schema validator with attributes of type string', () => {
 
     expect(() => middleware({ title, description, status, priority }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The string length must be at least 10.'
     })
   })
@@ -105,7 +102,6 @@ describe('middleware schema validator with attributes of type string', () => {
     
     expect(() => middleware({ title, description, status, priority, resume }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The string length must not exceed 30.'
     })  
   })
@@ -120,7 +116,6 @@ describe('middleware schema validator with attributes of type string', () => {
     
     expect(() => middleware({ title, description, status, priority }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Invalid value. The value must be one of the following: pending, in-progress, completed.'
     }) 
   })
@@ -178,7 +173,6 @@ describe('middleware schema validator with attributes of type number', () => {
         
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Expected a number, but received \'string\'.'
     }) 
   })
@@ -192,7 +186,6 @@ describe('middleware schema validator with attributes of type number', () => {
 
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute price is required.'
     })
   })
@@ -207,7 +200,6 @@ describe('middleware schema validator with attributes of type number', () => {
 
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Value -1 is less than the minimum value setted.'
     })
   })
@@ -222,7 +214,6 @@ describe('middleware schema validator with attributes of type number', () => {
 
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Expected a number, but received \'string\'.'
     })
   })
@@ -237,7 +228,6 @@ describe('middleware schema validator with attributes of type number', () => {
 
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute quantity is required.'
     })
   })
@@ -252,7 +242,6 @@ describe('middleware schema validator with attributes of type number', () => {
 
     expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute quantity is required.'
     })
   })
@@ -287,7 +276,6 @@ describe('middleware schema validator with attributes of type boolean', () => {
   it('should return an error when the required attribute is not sended', () => {
     expect(() => middleware({ isAvailable }, {})).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute isAvailable is required.'
     })
   })
@@ -299,7 +287,6 @@ describe('middleware schema validator with attributes of type boolean', () => {
 
     expect(() => middleware({ isAvailable }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute isAvailable is required.'
     })
   })
@@ -311,7 +298,6 @@ describe('middleware schema validator with attributes of type boolean', () => {
 
     expect(() => middleware({ isAvailable }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute isAvailable is required.'
     })
   })
@@ -323,7 +309,6 @@ describe('middleware schema validator with attributes of type boolean', () => {
 
     expect(() => middleware({ isAvailable }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Expected a boolean, but received \'string\'.'
     })
   })
@@ -358,7 +343,6 @@ describe('middleware schema validator with attributes of type date', () => {
   it('should return an error when the required attribute is not sended', () => {
     expect(() => middleware({ birthDate }, {})).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute birthDate is required.'
     })
   })
@@ -370,7 +354,6 @@ describe('middleware schema validator with attributes of type date', () => {
 
     expect(() => middleware({ birthDate }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute birthDate is required.'
     })
   })
@@ -382,7 +365,6 @@ describe('middleware schema validator with attributes of type date', () => {
 
     expect(() => middleware({ birthDate }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute birthDate is required.'
     })
   })
@@ -394,7 +376,6 @@ describe('middleware schema validator with attributes of type date', () => {
 
     expect(() => middleware({ birthDate }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Expected a valid Date object, but received \'string\'.'
     })
   })
@@ -451,7 +432,6 @@ describe('middleware schema validator with attributes of type array', () => {
 
     expect(() => middleware({ hobbies, friends }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Invalid value in the array. The values must be one of friend.'
     })
   })
@@ -459,7 +439,6 @@ describe('middleware schema validator with attributes of type array', () => {
   it('should return an error when the required attribute is not sended', () => {
     expect(() => middleware({ hobbies }, {})).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute hobbies is required.'
     })
   })
@@ -471,7 +450,6 @@ describe('middleware schema validator with attributes of type array', () => {
 
     expect(() => middleware({ hobbies }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute hobbies is required.'
     })
   })
@@ -483,7 +461,6 @@ describe('middleware schema validator with attributes of type array', () => {
 
     expect(() => middleware({ hobbies }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'The attribute hobbies is required.'
     })
   })
@@ -596,7 +573,6 @@ describe('middleware schema validator with attributes of type isDecimal128', () 
 
     expect(() => middleware({ price }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
       message: 'Invalid Decimal128.'
     })
   })
@@ -748,7 +724,7 @@ describe('middleware schema validator with attributes of type isValidMap', () =>
 
     expect(() => middleware({ mapStringMongoose }, body)).toThrow({
       httpErrorCode: 400,
-      internalErrorCode: 1000,
+      
       message: 'Invalid Map.'
     })
   })

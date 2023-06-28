@@ -48,16 +48,31 @@ If you have any questions or need assistance, feel free to reach out to us. Than
 To use the library, import it into your project:
 
 ```js
-const mongooseExpressSanitizer = require('mongoose-express-sanitizer');
+const sanitizer = require('mongoose-express-sanitizer');
 ```
 
 Then, use the library as middleware in your Express application:
 
-```js
-app.use(mongooseExpressSanitizer());
-```
-
 The library will then validate and sanitize the parameters of all requests received by the server.
+
+## Supported Mongoose Types 
+
+The library supports the following Mongoose types:
+
+- **String**: The library will validate and sanitize the string based on the following properties: required, minlength, maxlength and enum.
+- **Number**: The library will validate and sanitize the number based on the following properties: required, min, max.
+- **Date**: The library will validate and sanitize the date based on the following properties: required, min, max.
+- **Boolean**: The library will validate and sanitize the boolean based on the following properties: required.
+- **Array**: The library will validate and sanitize the array based on the following properties: required, min, max.
+- **Object**: The library will validate and sanitize the object based on the following properties: required, min, max.
+- **ObjectId**: The library will validate and sanitize the ObjectId based on the following properties: required, min, max.
+- **Buffer**: The library will validate and sanitize the buffer based on the following properties: required, min, max.
+- **Decimal128**: The library will validate and sanitize the decimal128 based on the following properties: required, min, max.
+- **Map**: The library will validate and sanitize the map based on the following properties: required, min, max.
+- **BigInt**: The library will validate and sanitize the bigint based on the following properties: required, min, max.
+  
+** Support nested schemas.
+** Support schema.tree with nested objects.
 
 ## Options
 
@@ -75,18 +90,13 @@ In this example, the library is used to validate and sanitize the parameters of 
 ```js
 const mongoose = require('mongoose');
 const express = require('express');
-const { middleware } = require('mongoose-express-sanitizer');
+const sanitizer = require('mongoose-express-sanitizer');
 
 // Create the Express application.
 const app = express();
 
 // Connect to the database.
-mongoose.connect('mongodb://localhost:27017/test', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
+mongoose.connect('mongodb://localhost:27017/test');
 
 // Define the Mongoose schema.
 

@@ -20,8 +20,7 @@ const isArray = (schemaAttribute, value) => {
   if (!Array.isArray(value)) {
     throw { 
       message: `Expected Array, but received '${typeof value}'.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1007
+      httpErrorCode: 400
     }
   }
 }
@@ -32,8 +31,7 @@ const isBoolean = (schemaAttribute, value) => {
   if (typeof value !== 'boolean') {
     throw {
       message: `Expected a boolean, but received '${typeof value}'.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1003
+      httpErrorCode: 400
     }
   }
   return
@@ -50,8 +48,7 @@ const isDate = (schemaAttribute, value) => {
   if (!(value instanceof Date && !isNaN(value))) {
     throw {
       message: `Expected a valid Date object, but received '${typeof value}'.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1003,
+      httpErrorCode: 400
     }
   }
 }
@@ -64,8 +61,7 @@ const isNumber = (schemaAttribute, value)=> {
   if(schemaAttribute.min || schemaAttribute.min === 0) verifyMinValue(schemaAttribute.min, value)
   if (typeof value !== 'number') throw { 
     message: `Expected a number, but received '${typeof value}'.`,
-    httpErrorCode: 400,
-    internalErrorCode: 1002
+    httpErrorCode: 400
   }
   return
 }
@@ -74,8 +70,7 @@ const isRequired = (value) => {
   if (value === undefined || value === null || value === '') {
     throw { 
       message: 'The attribute is required.',
-      httpErrorCode: 400,
-      internalErrorCode: 1000
+      httpErrorCode: 400
     } 
   }
 }
@@ -89,8 +84,7 @@ const isString =(schemaAttribute, value) => {
   if (typeof value !== 'string') {
     throw { 
       message: `Expected a string, but received '${typeof value}'.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1001
+      httpErrorCode: 400
     } 
   }
   return
@@ -105,8 +99,7 @@ const isValidObjectId = (schemaAttribute, value) => {
   if (!mongoose.Types.ObjectId.isValid(value) || value.length !== 24 || typeof value !== 'string') {
     throw { 
       message: 'Invalid ObjectId.',
-      httpErrorCode: 400,
-      internalErrorCode: 1001
+      httpErrorCode: 400
     } 
   }
   return
@@ -121,8 +114,7 @@ const isValidBuffer = (schemaAttribute, value) => {
   if (!Buffer.isBuffer(value)) {
     throw { 
       message: 'Invalid Buffer.',
-      httpErrorCode: 400,
-      internalErrorCode: 1001
+      httpErrorCode: 400
     } 
   }
   return
@@ -138,15 +130,13 @@ const isValidDecimal128 = (schemaAttribute, value) => {
   if(!validateNumericString(value)) {
     throw {
       message: 'Invalid Decimal128.',
-      httpErrorCode: 400,
-      internalErrorCode: 1001
+      httpErrorCode: 400
     }
   }
   if(!isConvertableToDecimal128(value)) {
     throw {
       message: 'Invalid Decimal128.',
-      httpErrorCode: 400,
-      internalErrorCode: 1001
+      httpErrorCode: 400
     }
   }
 
@@ -164,8 +154,7 @@ const isValidMap = (schemaAttribute, value) => {
   if(!(typeof value === 'object' || Array.isArray(value))) {
     throw {
       message: 'Invalid Map.',
-      httpErrorCode: 400,
-      internalErrorCode: 1001
+      httpErrorCode: 400
     }
   }
  
@@ -174,8 +163,7 @@ const isValidMap = (schemaAttribute, value) => {
       if (!isValidType(value[key], of)) {
         throw {
           message: `Invalid Map. The value of the key '${key}' must be a ${of}.`,
-          httpErrorCode: 400,
-          internalErrorCode: 1001
+          httpErrorCode: 400
         }
       }
     }
@@ -186,8 +174,7 @@ const isValidMap = (schemaAttribute, value) => {
       if (!isValidType(item, of)) {
         throw {
           message: `Invalid Map. The value of the key '${index}' must be a ${of}.`,
-          httpErrorCode: 400,
-          internalErrorCode: 1001
+          httpErrorCode: 400
         }
       }
     })
@@ -329,8 +316,7 @@ const isValidType = (value, type) => {
   default:
     throw {
       message: `Type ${typeof value} not supported.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1001
+      httpErrorCode: 400
     }
   }
 }
@@ -341,8 +327,7 @@ const verifyEnumValue = (schemaAttribute, value) => {
   if (!schemaAttribute.enum.includes(value)) {
     throw { 
       message: `Invalid value. The value must be one of the following: ${schemaAttribute.enum.join(', ')}.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1006
+      httpErrorCode: 400
     }
   }
 }
@@ -351,8 +336,7 @@ const verifyMinLengthArray = (minLength, attribute) => {
   if (!Array.isArray(attribute) || attribute.length < minLength) {
     throw { 
       message: `The array length must be at least ${minLength}.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1008
+      httpErrorCode: 400
     }
   }
 }
@@ -361,8 +345,7 @@ const verifyMaxLengthArray = (maxLength, attribute) => {
   if (!Array.isArray(attribute) || attribute.length > maxLength) {
     throw {
       message: `The array length must not exceed ${maxLength}.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1009,
+      httpErrorCode: 400
     }
   }
 }
@@ -371,8 +354,7 @@ const verifyMinLengthString = (minLength, attribute) => {
   if (attribute.length < minLength) {
     throw {
       message: `The string length must be at least ${minLength}.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1008,
+      httpErrorCode: 400
     }
   }
 }
@@ -381,8 +363,7 @@ const verifyMaxLengthString = (maxLength, attribute) => {
   if (attribute.length > maxLength) {
     throw {
       message: `The string length must not exceed ${maxLength}.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1009,
+      httpErrorCode: 400
     }
   }
 }
@@ -391,8 +372,7 @@ const verifyValidEnumForArray = (enumValues, attribute) => {
   if (!Array.isArray(attribute) || !attribute.every((value) => enumValues.includes(value))) {
     throw {
       message: `Invalid value in the array. The values must be one of ${enumValues.join(', ')}.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1010,
+      httpErrorCode: 400
     }
   }
 }
@@ -402,8 +382,7 @@ const verifyMinValue = (min, attribute) => {
   if (attribute < min) {
     throw { 
       message: `Value ${attribute} is less than the minimum value setted.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1007
+      httpErrorCode: 400
     }
   }
 }
@@ -412,8 +391,7 @@ const verifyMaxValue = (max, attribute) => {
   if (attribute > max) {
     throw { 
       message: `Value ${attribute} is greater than the maximum value setted.`,
-      httpErrorCode: 400,
-      internalErrorCode: 1007
+      httpErrorCode: 400
     }
   }
 }

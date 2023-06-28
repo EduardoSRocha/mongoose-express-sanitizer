@@ -20,7 +20,9 @@ const possibleTypes = [
   'Map',
   'Decimal128',
   'ObjectId',
-  'Buffer'
+  'Buffer',
+  'BigInt',
+  'UUID'
 ]
 
 function isFirstCharacterVowel(str) {
@@ -48,8 +50,7 @@ const getTypeFromString = (type) => {
   if (typeof attribute === 'string' && possibleTypes.includes(type)) return type
   throw {
     message: 'Invalid type',
-    httpErrorCode: 400,
-    internalErrorCode: 1002
+    httpErrorCode: 400
   }
 }
 
@@ -104,8 +105,7 @@ const validateElementOfSchema = (schemaAttribute, paramReceived) => {
   default:
     throw {
       message: 'Invalid type',
-      httpErrorCode: 400,
-      internalErrorCode: 1002
+      httpErrorCode: 400
     }
   }
 }
