@@ -1,10 +1,10 @@
 import {
-  middleware,
+  body,
 } from '.'
 import mongoose from 'mongoose'
 
 // String
-describe('middleware schema validator with attributes of type string', () => {
+describe('body schema validator with attributes of type string', () => {
   const taskSchema = new mongoose.Schema({
     title: {
       type: String,
@@ -39,7 +39,7 @@ describe('middleware schema validator with attributes of type string', () => {
   const { title, description, status, priority, resume} = Task.schema.tree
 
   it('should return without errors when all attributes are valid', () => {
-    const body = {
+    const bodyRequest = {
       title: 'titleOfTask',
       description: 'description',
       status: 'pending',
@@ -47,52 +47,52 @@ describe('middleware schema validator with attributes of type string', () => {
       resume: 'resume of task',
     }
 
-    expect(() => middleware({ title, description, status, priority, resume }, body)).not.toThrow()
+    expect(() => body({ title, description, status, priority, resume }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return an error when the title is not a string', () => {
-    const body = {
+    const bodyRequest = {
       title: 1,
       description: 'description',
       status: 'pending',
       priority: 'low',
     }
     
-    expect(() => middleware({ title, description, status, priority }, body)).toThrow({
+    expect(() => body({ title, description, status, priority }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Expected a string, but received \'number\'.'
     }) 
   })
 
   it('should return an error when the required title is not sended', () => {
-    const body = {
+    const bodyRequest = {
       description: 'description',
       status: 'pending',
       priority: 'low',
     }
     
-    expect(() => middleware({ title, description, status, priority }, body)).toThrow({
+    expect(() => body({ title, description, status, priority }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute title is required.'
     })
   })    
 
   it('should return an error when the title is less than the minlength', () => {
-    const body = {
+    const bodyRequest = {
       title: 'title',
       description: 'description',
       status: 'pending',
       priority: 'low',
     }
 
-    expect(() => middleware({ title, description, status, priority }, body)).toThrow({
+    expect(() => body({ title, description, status, priority }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The string length must be at least 10.'
     })
   })
 
   it('should return an error when the reume is more than the maxlength', () => {
-    const body = {
+    const bodyRequest = {
       title: 'titleOfTask',
       description: 'description',
       status: 'pending',
@@ -100,21 +100,21 @@ describe('middleware schema validator with attributes of type string', () => {
       resume: 'resume of task with more than 30 characters'
     }
     
-    expect(() => middleware({ title, description, status, priority, resume }, body)).toThrow({
+    expect(() => body({ title, description, status, priority, resume }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The string length must not exceed 30.'
     })  
   })
 
   it('should return an error when the status is not the accepted values of enum', () => {
-    const body = {
+    const bodyRequest = {
       title: 'titleOfTask',
       description: 'description',
       status: 'status',
       priority: 'low',
     }
     
-    expect(() => middleware({ title, description, status, priority }, body)).toThrow({
+    expect(() => body({ title, description, status, priority }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Invalid value. The value must be one of the following: pending, in-progress, completed.'
     }) 
@@ -122,7 +122,7 @@ describe('middleware schema validator with attributes of type string', () => {
 })
 
 // Number
-describe('middleware schema validator with attributes of type number', () => {
+describe('body schema validator with attributes of type number', () => {
   const productSchema = new mongoose.Schema({
     price: {
       type: Number,
@@ -153,94 +153,94 @@ describe('middleware schema validator with attributes of type number', () => {
 
 
   it('should return withour error when all attributes are valid', () => {
-    const body = {
+    const bodyRequest = {
       price: 1,
       quantity: 1,
       discount: 0,
       rating: 1
     }
 
-    expect(() => middleware({ price, quantity, discount, rating }, body)).not.toThrow()
+    expect(() => body({ price, quantity, discount, rating }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return an error when the price is not a number', () => {
-    const body = {
+    const bodyRequest = {
       price: 'price',
       quantity: 1,
       discount: 0,
       rating: 1
     }
         
-    expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
+    expect(() => body({ price, quantity, discount, rating }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Expected a number, but received \'string\'.'
     }) 
   })
 
   it('should return an error when the required price is not sended', () => {
-    const body = {
+    const bodyRequest = {
       quantity: 1,
       discount: 0,
       rating: 1
     }
 
-    expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
+    expect(() => body({ price, quantity, discount, rating }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute price is required.'
     })
   })
 
   it('should return an error when the price is less than the min', () => {
-    const body = {
+    const bodyRequest = {
       price: -1,
       quantity: 1,
       discount: 0,
       rating: 1
     }
 
-    expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
+    expect(() => body({ price, quantity, discount, rating }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Value -1 is less than the minimum value setted.'
     })
   })
 
   it('should return an error when the quantity is not a number', () => {
-    const body = {
+    const bodyRequest = {
       price: 1,
       quantity: 'quantity',
       discount: 0,
       rating: 1
     }
 
-    expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
+    expect(() => body({ price, quantity, discount, rating }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Expected a number, but received \'string\'.'
     })
   })
 
   it('should return an error when the required quantity is undefined', () => {
-    const body = {
+    const bodyRequest = {
       price: 1,
       quantity: undefined,
       discount: 0,
       rating: 1
     }
 
-    expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
+    expect(() => body({ price, quantity, discount, rating }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute quantity is required.'
     })
   })
 
   it('should return an error when the required quantity is null', () => {
-    const body = {
+    const bodyRequest = {
       price: 1,
       quantity: null,
       discount: 0,
       rating: 1
     }
 
-    expect(() => middleware({ price, quantity, discount, rating }, body)).toThrow({
+    expect(() => body({ price, quantity, discount, rating }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute quantity is required.'
     })
@@ -249,7 +249,7 @@ describe('middleware schema validator with attributes of type number', () => {
 })
 
 // Boolean
-describe('middleware schema validator with attributes of type boolean', () => {
+describe('body schema validator with attributes of type boolean', () => {
   const inscriptionSchema = new mongoose.Schema({
     isAvailable: {
       type: Boolean,
@@ -265,49 +265,49 @@ describe('middleware schema validator with attributes of type boolean', () => {
   const { isAvailable, isFree } = Inscription.schema.tree
 
   it('should return without error when all attributes are valid', () => {
-    const body = {
+    const bodyRequest = {
       isAvailable: true,
       isFree: false
     }
 
-    expect(() => middleware({ isAvailable, isFree }, body)).not.toThrow()
+    expect(() => body({ isAvailable, isFree }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return an error when the required attribute is not sended', () => {
-    expect(() => middleware({ isAvailable }, {})).toThrow({
+    expect(() => body({ isAvailable }, { body: {}})).toThrow({
       httpErrorCode: 400,
       message: 'The attribute isAvailable is required.'
     })
   })
 
   it('should return an error when the required attribute is null', () => {
-    const body = {
+    const bodyRequest = {
       isAvailable: null
     }
 
-    expect(() => middleware({ isAvailable }, body)).toThrow({
+    expect(() => body({ isAvailable }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute isAvailable is required.'
     })
   })
 
   it('should return an error when the required attribute is undefined', () => {
-    const body = {
+    const bodyRequest = {
       isAvailable: undefined
     }
 
-    expect(() => middleware({ isAvailable }, body)).toThrow({
+    expect(() => body({ isAvailable }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute isAvailable is required.'
     })
   })
 
   it('should return an error when the attribute is not a boolean', () => {
-    const body = {
+    const bodyRequest = {
       isAvailable: 'true'
     }
 
-    expect(() => middleware({ isAvailable }, body)).toThrow({
+    expect(() => body({ isAvailable }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Expected a boolean, but received \'string\'.'
     })
@@ -315,7 +315,7 @@ describe('middleware schema validator with attributes of type boolean', () => {
 })
 
 // Date
-describe('middleware schema validator with attributes of type date', () => {
+describe('body schema validator with attributes of type date', () => {
   const userSchema = new mongoose.Schema({
     birthDate: {
       type: Date,
@@ -332,49 +332,49 @@ describe('middleware schema validator with attributes of type date', () => {
   const { birthDate, lastLogin } = User.schema.tree
 
   it('should return without error when all attributes are valid', () => {
-    const body = {
+    const bodyRequest = {
       birthDate: new Date(),
       lastLogin: new Date(),
     }
 
-    expect(() => middleware({ birthDate, lastLogin }, body)).not.toThrow()
+    expect(() => body({ birthDate, lastLogin }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return an error when the required attribute is not sended', () => {
-    expect(() => middleware({ birthDate }, {})).toThrow({
+    expect(() => body({ birthDate }, { body: {}})).toThrow({
       httpErrorCode: 400,
       message: 'The attribute birthDate is required.'
     })
   })
 
   it('should return an error when the required attribute is null', () => {
-    const body = {
+    const bodyRequest = {
       birthDate: null
     }
 
-    expect(() => middleware({ birthDate }, body)).toThrow({
+    expect(() => body({ birthDate }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute birthDate is required.'
     })
   })
 
   it('should return an error when the required attribute is undefined', () => {
-    const body = {
+    const bodyRequest = {
       birthDate: undefined
     }
 
-    expect(() => middleware({ birthDate }, body)).toThrow({
+    expect(() => body({ birthDate }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute birthDate is required.'
     })
   })
 
   it('should return an error when the attribute is not a date', () => {
-    const body = {
+    const bodyRequest = {
       birthDate: 'birthDate'
     }
 
-    expect(() => middleware({ birthDate }, body)).toThrow({
+    expect(() => body({ birthDate }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Expected a valid Date object, but received \'string\'.'
     })
@@ -382,7 +382,7 @@ describe('middleware schema validator with attributes of type date', () => {
 })
 
 // Array
-describe('middleware schema validator with attributes of type array', () => {
+describe('body schema validator with attributes of type array', () => {
   const socialNetworkSchema = new mongoose.Schema({
     hobbies: {
       type: Array,
@@ -400,66 +400,66 @@ describe('middleware schema validator with attributes of type array', () => {
   const { hobbies, friends } = SocialNetwork.schema.tree
 
   it('should return without error when all attributes are valid', () => {
-    const body = {
+    const bodyRequest = {
       hobbies: ['hobby'],
       friends: ['friend'],
     }
 
-    expect(() => middleware({ hobbies, friends }, body)).not.toThrow()
+    expect(() => body({ hobbies, friends }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when the attribute is not required and null is sended', () => {
-    const body = {
+    const bodyRequest = {
       friends: null,
     }
 
-    expect(() => middleware({ friends }, body)).not.toThrow()
+    expect(() => body({ friends }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when the attribute is not required and undefined is sended', () => {
-    const body = {
+    const bodyRequest = {
       friends: undefined,
     }
 
-    expect(() => middleware({ friends }, body)).not.toThrow()
+    expect(() => body({ friends }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return an error when Array enum attribute is not valid', () => {
-    const body = {
+    const bodyRequest = {
       hobbies: ['hobby'],
       friends: ['joao', 'maria'],
     }
 
-    expect(() => middleware({ hobbies, friends }, body)).toThrow({
+    expect(() => body({ hobbies, friends }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Invalid value in the array. The values must be one of friend.'
     })
   })
 
   it('should return an error when the required attribute is not sended', () => {
-    expect(() => middleware({ hobbies }, {})).toThrow({
+    expect(() => body({ hobbies }, { body: {}})).toThrow({
       httpErrorCode: 400,
       message: 'The attribute hobbies is required.'
     })
   })
 
   it('should return an error when the required attribute is null', () => {
-    const body = {
+    const bodyRequest = {
       hobbies: null
     }
 
-    expect(() => middleware({ hobbies }, body)).toThrow({
+    expect(() => body({ hobbies }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute hobbies is required.'
     })
   })
 
   it('should return an error when the required attribute is undefined', () => {
-    const body = {
+    const bodyRequest = {
       hobbies: undefined
     }
 
-    expect(() => middleware({ hobbies }, body)).toThrow({
+    expect(() => body({ hobbies }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'The attribute hobbies is required.'
     })
@@ -468,7 +468,7 @@ describe('middleware schema validator with attributes of type array', () => {
 })
 
 // Object
-describe('middleware schema validator with attributes of type object', () => {
+describe('body schema validator with attributes of type object', () => {
   const animalSchema = new mongoose.Schema({
     species: String,
     physicalCharacteristics: {
@@ -499,7 +499,7 @@ describe('middleware schema validator with attributes of type object', () => {
   const { size, behavior } = Animal.schema.tree
 
   it('should return without error when all attributes of object with children are valid', () => {
-    const body = {
+    const bodyRequest = {
       size: 'big',
       behavior: {
         diet: 'carnivore',
@@ -510,14 +510,14 @@ describe('middleware schema validator with attributes of type object', () => {
       },
     }
 
-    expect(() => middleware({ size, behavior }, body)).not.toThrow()
+    expect(() => body({ size, behavior }, { body: bodyRequest })).not.toThrow()
   })
 
     
 })
 
 // isDecimal128
-describe('middleware schema validator with attributes of type isDecimal128', () => {
+describe('body schema validator with attributes of type isDecimal128', () => {
   const carSchema = new mongoose.Schema({
     price: {
       type: mongoose.Schema.Types.Decimal128,
@@ -538,40 +538,40 @@ describe('middleware schema validator with attributes of type isDecimal128', () 
   const { price, discount, tax } = Car.schema.tree
 
   it('should return without error when all attributes are valid', () => {
-    const body = {
+    const bodyRequest = {
       price: 123.45,
       discount: 0.1,
       tax: 0.2
     }
 
-    expect(() => middleware({  price, discount, tax }, body)).not.toThrow()
+    expect(() => body({  price, discount, tax }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when the attribute is not required and null is sended', () => {
-    const body = {
+    const bodyRequest = {
       price: 123.45,
       discount: null, 
       tax: null
     }
 
-    expect(() => middleware({ price, discount, tax }, body)).not.toThrow()
+    expect(() => body({ price, discount, tax }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when the attribute is not required and undefined is sended', () => {
-    const body = {
+    const bodyRequest = {
       price: 123.45,
       discount: undefined,
     }
 
-    expect(() => middleware({ price, discount }, body)).not.toThrow()
+    expect(() => body({ price, discount }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return an error when the attribute is not a decimal128', () => {
-    const body = {
+    const bodyRequest = {
       price: 'price',
     }
 
-    expect(() => middleware({ price }, body)).toThrow({
+    expect(() => body({ price }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       message: 'Invalid Decimal128.'
     })
@@ -579,7 +579,7 @@ describe('middleware schema validator with attributes of type isDecimal128', () 
 })
 
 // isValidObjectId
-describe('middleware schema validator with attributes of type isValidObjectId', () => {
+describe('body schema validator with attributes of type isValidObjectId', () => {
   const lawSchema = new mongoose.Schema({
     id: {
       type: mongoose.Schema.Types.ObjectId,
@@ -596,17 +596,17 @@ describe('middleware schema validator with attributes of type isValidObjectId', 
   const { id } = Law.schema.tree
 
   it('should return without error when all attributes are valid', () => {
-    const body = {
+    const bodyRequest = {
       id: '5f8a9d9a9d9a9d9a9d9a9d9a'
     }
 
-    expect(() => middleware({ id }, body)).not.toThrow()
+    expect(() => body({ id }, { body: bodyRequest })).not.toThrow()
   })
 
 })
 
 // isValidMap
-describe('middleware schema validator with attributes of type isValidMap', () => {
+describe('body schema validator with attributes of type isValidMap', () => {
   const employeeSchema = new mongoose.Schema({
     mapStringMongoose: {
       type: Map,
@@ -660,69 +660,69 @@ describe('middleware schema validator with attributes of type isValidMap', () =>
   } = Employee.schema.tree
 
   it('should return without error when MAP of String are valid', () => {
-    const body = {
+    const bodyRequest = {
       mapStringMongoose: ['test', 'test']
     }
 
-    expect(() => middleware({ mapStringMongoose }, body)).not.toThrow()
+    expect(() => body({ mapStringMongoose }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when MAP of Number are valid', () => {
-    const body = {
+    const bodyRequest = {
       mapNumberMongoose: [1, 2]
     }
 
-    expect(() => middleware({ mapNumberMongoose }, body)).not.toThrow()
+    expect(() => body({ mapNumberMongoose }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when MAP of Boolean are valid', () => {
-    const body = {
+    const bodyRequest = {
       mapBooleanMongoose: [true, false]
     }
 
-    expect(() => middleware({ mapBooleanMongoose }, body)).not.toThrow()
+    expect(() => body({ mapBooleanMongoose }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when MAP of Date are valid', () => {
     const validDate = new Date()
-    const body = {
+    const bodyRequest = {
       mapDateMongoose: [validDate, validDate]
     }
 
-    expect(() => middleware({ mapDateMongoose }, body)).not.toThrow()
+    expect(() => body({ mapDateMongoose }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when MAP of Decimal128 are valid', () => {
-    const body = {
+    const bodyRequest = {
       mapDecimal128Mongoose: [123.45, 123.45]
     }
 
-    expect(() => middleware({ mapDecimal128Mongoose }, body)).not.toThrow()
+    expect(() => body({ mapDecimal128Mongoose }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when MAP of ObjectId are valid', () => {
-    const body = {
+    const bodyRequest = {
       mapObjectIdMongoose: ['5f8a9d9a9d9a9d9a9d9a9d9a', '5f8a9d9a9d9a9d9a9d9a9d9a']
     }
 
-    expect(() => middleware({ mapObjectIdMongoose }, body)).not.toThrow()
+    expect(() => body({ mapObjectIdMongoose }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return without error when MAP of Buffer are valid', () => {
     const validBuffer = Buffer.from('buffer')
-    const body = {
+    const bodyRequest = {
       mapBufferMongoose: [validBuffer, validBuffer]
     }
 
-    expect(() => middleware({ mapBufferMongoose }, body)).not.toThrow()
+    expect(() => body({ mapBufferMongoose }, { body: bodyRequest })).not.toThrow()
   })
 
   it('should return an error when the attribute is not a MAP', () => {
-    const body = {
+    const bodyRequest = {
       mapStringMongoose: 'test'
     }
 
-    expect(() => middleware({ mapStringMongoose }, body)).toThrow({
+    expect(() => body({ mapStringMongoose }, { body: bodyRequest })).toThrow({
       httpErrorCode: 400,
       
       message: 'Invalid Map.'
@@ -731,7 +731,7 @@ describe('middleware schema validator with attributes of type isValidMap', () =>
 })
 
 // isValidBuffer
-describe('middleware schema validator with attributes of type isValidBuffer', () => {
+describe('body schema validator with attributes of type isValidBuffer', () => {
   const fileSchema = new mongoose.Schema({
     buffer: {
       type: Buffer,
@@ -744,11 +744,11 @@ describe('middleware schema validator with attributes of type isValidBuffer', ()
   const { buffer } = File.schema.tree
 
   it('should return without error when all attributes are valid', () => {
-    const body = {
+    const bodyRequest = {
       buffer: Buffer.from('buffer')
     }
 
-    expect(() => middleware({ buffer }, body)).not.toThrow()
+    expect(() => body({ buffer }, { body: bodyRequest })).not.toThrow()
   })
 
 })

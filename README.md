@@ -69,10 +69,13 @@ The library supports the following Mongoose types:
 - **Buffer**: The library will validate and sanitize the buffer based on the following properties: required, min, max.
 - **Decimal128**: The library will validate and sanitize the decimal128 based on the following properties: required, min, max.
 - **Map**: The library will validate and sanitize the map based on the following properties: required, min, max.
-- **BigInt**: The library will validate and sanitize the bigint based on the following properties: required, min, max.
   
 ** Support nested schemas.
 ** Support schema.tree with nested objects.
+
+## Supported Mongoose Types in development
+
+- **BigInt**: The library will validate and sanitize the bigint based on the following properties: required, min, max.
 
 ## Options
 
@@ -88,15 +91,15 @@ The following example demonstrate how to use the library.
 In this example, the library is used to validate and sanitize the parameters of an Express request using the schema defined for the model associated with the request route.
 
 ```js
-const mongoose = require('mongoose');
-const express = require('express');
-const sanitizer = require('mongoose-express-sanitizer');
+import mongoose from 'mongoose'
+import express from 'express'
+import { body, queries, params, headers } from 'mongoose-express-sanitizer'
 
 // Create the Express application.
-const app = express();
+const app = express()
 
 // Connect to the database.
-mongoose.connect('mongodb://localhost:27017/test');
+mongoose.connect('mongodb://localhost:27017/test')
 
 // Define the Mongoose schema.
 
@@ -123,26 +126,26 @@ const userSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 1024,
   },
-});
+})
 
 // Define the Mongoose model.
 
 const User = mongoose.model('User', userSchema);
 
-const { name, email, password } = req.body;
+const { name, email, password } = User.schema.tree
 
 // Define the Express route.
 
-app.post('/users', middleware({ name, email, password }, req.body), async (req, res) => {
-    // Create a new user.
-    const user = new User(req.body);
+app.post('/users', body({ name, email, password }), async (req, res) => {
+  // Create a new user.
+  const user = new User(req.body)
 
-    // Save the user to the database.
-    await user.save();
+  // Save the user.
+  await user.save()
 
-    // Return the user.
-    res.send(user);
-});
+  // Return the user.
+  res.send(user)
+})
 
 // Start the server.
 
