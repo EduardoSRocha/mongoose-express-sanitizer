@@ -1,7 +1,9 @@
 <h1 align="center"> mongoose-express-sanitizer </h1>
 
-<p align="center">
-  <img alt="Static Badge" src="https://badge.fury.io/js/mongoose-express-sanitizer.svg">
+<p align="center" >
+  <a href="https://www.npmjs.com/package/mongoose-express-sanitizer" target="_blank">
+    <img alt="Static Badge" src="https://badge.fury.io/js/mongoose-express-sanitizer.svg">
+  </a>
 </p>
 
 ## About the Library
