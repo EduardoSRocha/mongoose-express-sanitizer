@@ -140,16 +140,18 @@ const { name, email, password } = User.schema.tree
 
 // Define the Express route.
 
-app.post('/users', body({ name, email, password }, req), async (req, res) => {
-  // Create a new user.
-  const user = new User(req.body)
+app.post('/users', 
+  (req) => body({ conceptString, conceptNumber, conceptData }, req),
+  async (req, res) => {
+    // Create a new user.
+    const user = new User(req.body)
 
-  // Save the user.
-  await user.save()
+    // Save the user.
+    await user.save()
 
-  // Return the user.
-  res.send(user)
-})
+    // Return the user.
+    res.send(user)
+  })
 
 // Start the server.
 
